@@ -1,0 +1,99 @@
+# Laravel
+/.env
+/.env.backup
+/.env.production
+/.phpunit.result.cache
+/phpunit.xml
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+
+# Dependencies
+/node_modules
+/vendor
+
+# Build assets
+/public/build
+/public/hot
+/public/storage
+/public/mix-manifest.json
+
+# Storage
+/storage/*.key
+/storage/pail
+/storage/framework/cache/*
+!/storage/framework/cache/.gitkeep
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitkeep
+/storage/framework/views/*
+!/storage/framework/views/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# Testing
+/.phpunit.cache
+/coverage
+/.phpunit.result.cache
+
+# IDE & Editors
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.phpactor.json
+/.zed
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# Database
+*.sqlite
+*.sqlite-journal
+*.db
+database_schema.sql
+
+# Test files
+test_image.jpg
+test_real_image.jpg
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+archive.zip
+
+# Laravel specific
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Optional: Uncomment if you use these
+# /.phpstorm.meta.php
+# /.php_cs.cache
+# /.php_cs.php.cache

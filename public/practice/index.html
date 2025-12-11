@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Medyuva Practice Exam - Select subjects and lessons to create custom practice tests">
+    <meta name="keywords" content="medical education, practice exam, online assessment, Medyuva, medical training">
+    <meta name="author" content="Medyuva">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Medyuva Practice Exam - Custom Medical Practice Tests">
+    <meta property="og:description" content="Create custom practice tests by selecting subjects and lessons. Practice with 5, 10, or 20 questions.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://lv-files.trogon.info/medyuva/uploads/media/medyuva_logo.png">
+    <title>Medyuva Practice Exam - Custom Medical Practice Tests</title>
+    <link rel="stylesheet" href="styles.css?v=1">
+    <link rel="icon" type="image/png" href="https://lv-files.trogon.info/medyuva/uploads/media/medyuva_logo.png">
+</head>
+<body>
+    <!-- Practice Exam Selection Page -->
+    <div id="practice-selection-page" class="page active">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h2>Practice Exam</h2>
+            <div class="header-right">
+                <img src="https://lv-files.trogon.info/medyuva/uploads/media/medyuva_logo.png" alt="Medyuva Logo" class="header-logo">
+            </div>
+        </div>
+        
+        <div class="practice-container">
+            <div class="welcome-section">
+                <h1>Create Your Practice Test</h1>
+                <p>Select subjects and lessons to customize your practice exam</p>
+            </div>
+
+            <div class="subjects-section">
+                <h3>Select Subjects & Lessons</h3>
+                <div class="subjects-container">
+                    <!-- Subject 1: Anatomy -->
+                    <div class="subject-card">
+                        <div class="subject-header" onclick="toggleSubject('anatomy')">
+                            <div class="subject-info">
+                                <input type="checkbox" id="anatomy-checkbox" class="subject-checkbox">
+                                <label for="anatomy-checkbox" class="subject-label">Anatomy</label>
+                            </div>
+                            <span class="subject-arrow" id="anatomy-arrow">▼</span>
+                        </div>
+                        <div class="lessons-container" id="anatomy-lessons">
+                            <div class="lesson-item">
+                                <input type="checkbox" id="anatomy-cardiovascular" class="lesson-checkbox" data-subject="anatomy">
+                                <label for="anatomy-cardiovascular">Cardiovascular System</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="anatomy-respiratory" class="lesson-checkbox" data-subject="anatomy">
+                                <label for="anatomy-respiratory">Respiratory System</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="anatomy-nervous" class="lesson-checkbox" data-subject="anatomy">
+                                <label for="anatomy-nervous">Nervous System</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="anatomy-digestive" class="lesson-checkbox" data-subject="anatomy">
+                                <label for="anatomy-digestive">Digestive System</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subject 2: Physiology -->
+                    <div class="subject-card">
+                        <div class="subject-header" onclick="toggleSubject('physiology')">
+                            <div class="subject-info">
+                                <input type="checkbox" id="physiology-checkbox" class="subject-checkbox">
+                                <label for="physiology-checkbox" class="subject-label">Physiology</label>
+                            </div>
+                            <span class="subject-arrow" id="physiology-arrow">▼</span>
+                        </div>
+                        <div class="lessons-container" id="physiology-lessons">
+                            <div class="lesson-item">
+                                <input type="checkbox" id="physiology-cardiovascular" class="lesson-checkbox" data-subject="physiology">
+                                <label for="physiology-cardiovascular">Cardiovascular Physiology</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="physiology-respiratory" class="lesson-checkbox" data-subject="physiology">
+                                <label for="physiology-respiratory">Respiratory Physiology</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="physiology-endocrine" class="lesson-checkbox" data-subject="physiology">
+                                <label for="physiology-endocrine">Endocrine System</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subject 3: Pathology -->
+                    <div class="subject-card">
+                        <div class="subject-header" onclick="toggleSubject('pathology')">
+                            <div class="subject-info">
+                                <input type="checkbox" id="pathology-checkbox" class="subject-checkbox">
+                                <label for="pathology-checkbox" class="subject-label">Pathology</label>
+                            </div>
+                            <span class="subject-arrow" id="pathology-arrow">▼</span>
+                        </div>
+                        <div class="lessons-container" id="pathology-lessons">
+                            <div class="lesson-item">
+                                <input type="checkbox" id="pathology-infectious" class="lesson-checkbox" data-subject="pathology">
+                                <label for="pathology-infectious">Infectious Diseases</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="pathology-neoplastic" class="lesson-checkbox" data-subject="pathology">
+                                <label for="pathology-neoplastic">Neoplastic Diseases</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="pathology-inflammatory" class="lesson-checkbox" data-subject="pathology">
+                                <label for="pathology-inflammatory">Inflammatory Diseases</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subject 4: Pharmacology -->
+                    <div class="subject-card">
+                        <div class="subject-header" onclick="toggleSubject('pharmacology')">
+                            <div class="subject-info">
+                                <input type="checkbox" id="pharmacology-checkbox" class="subject-checkbox">
+                                <label for="pharmacology-checkbox" class="subject-label">Pharmacology</label>
+                            </div>
+                            <span class="subject-arrow" id="pharmacology-arrow">▼</span>
+                        </div>
+                        <div class="lessons-container" id="pharmacology-lessons">
+                            <div class="lesson-item">
+                                <input type="checkbox" id="pharmacology-cardiovascular" class="lesson-checkbox" data-subject="pharmacology">
+                                <label for="pharmacology-cardiovascular">Cardiovascular Drugs</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="pharmacology-antibiotics" class="lesson-checkbox" data-subject="pharmacology">
+                                <label for="pharmacology-antibiotics">Antibiotics</label>
+                            </div>
+                            <div class="lesson-item">
+                                <input type="checkbox" id="pharmacology-analgesics" class="lesson-checkbox" data-subject="pharmacology">
+                                <label for="pharmacology-analgesics">Analgesics & Anesthetics</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-count-section">
+                <h3>Number of Questions</h3>
+                <div class="question-options">
+                    <div class="question-option">
+                        <input type="radio" id="questions-5" name="question-count" value="5">
+                        <label for="questions-5" class="question-label">
+                            <span class="question-number">5</span>
+                            <span class="question-text">Quick Practice</span>
+                        </label>
+                    </div>
+                    <div class="question-option">
+                        <input type="radio" id="questions-10" name="question-count" value="10" checked>
+                        <label for="questions-10" class="question-label">
+                            <span class="question-number">10</span>
+                            <span class="question-text">Standard Practice</span>
+                        </label>
+                    </div>
+                    <div class="question-option">
+                        <input type="radio" id="questions-20" name="question-count" value="20">
+                        <label for="questions-20" class="question-label">
+                            <span class="question-number">20</span>
+                            <span class="question-text">Comprehensive Practice</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="selected-summary">
+                <h3>Selected Topics</h3>
+                <div class="selected-topics" id="selected-topics">
+                    <p class="no-selection">No topics selected</p>
+                </div>
+            </div>
+
+            <div class="start-practice-section">
+                <button class="start-practice-btn" onclick="startPracticeExam()" disabled>
+                    Start Practice Test
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Exam Question Page -->
+    <div id="practice-exam-page" class="page">
+        <div class="header">
+            <button class="back-btn" onclick="goBackToSelection()">←</button>
+            <h2>Practice Exam</h2>
+            <div class="header-right">
+                <span class="timer">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z" fill="currentColor"/>
+                    </svg>
+                    <span id="time-remaining">30:00</span>
+                </span>
+                <button class="menu-btn" onclick="toggleQuestionPalette()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="question-nav">
+            <div class="question-numbers" id="question-numbers">
+                <!-- Question numbers will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="question-container">
+            <div class="question-card">
+                <h3 id="question-text">Loading question...</h3>
+            </div>
+            
+            <div class="options-container" id="options-container">
+                <!-- Options will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="prev-btn" onclick="previousQuestion()">Previous</button>
+            <button class="next-btn" onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+
+    <!-- Question Palette Overlay -->
+    <div id="question-palette" class="question-palette">
+        <div class="palette-content">
+            <div class="palette-header">
+                <h3>Questions</h3>
+                <button class="close-palette" onclick="toggleQuestionPalette()">×</button>
+            </div>
+            <div class="question-grid" id="question-grid">
+                <!-- Question grid will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Results Page -->
+    <div id="practice-results-page" class="page">
+        <div class="header">
+            <button class="back-btn" onclick="goBackToSelection()">←</button>
+            <h2>Practice Results</h2>
+        </div>
+        
+        <div class="results-container">
+            <div class="congratulations-card">
+                <div class="trophy">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V7C19 8.1 18.1 9 17 9H16V10.5C16 11.33 16.67 12 17.5 12S19 11.33 19 10.5V9H20C20.55 9 21 9.45 21 10S20.55 11 20 11H4C3.45 11 3 10.55 3 10S3.45 9 4 9H5V7C5 5.9 5.9 5 7 5H8V4H7ZM9 3V4H15V3H9ZM7 6C6.45 6 6 6.45 6 7V8H5V7C5 6.45 5.45 6 6 6H7ZM17 6C17.55 6 18 6.45 18 7V8H17V7C17 6.45 16.55 6 16 6H17ZM12 13C10.9 13 10 13.9 10 15V16H14V15C14 13.9 13.1 13 12 13ZM8 15V17H16V15H8ZM6 19H18C18.55 19 19 19.45 19 20S18.55 21 18 21H6C5.45 21 5 20.55 5 20S5.45 19 6 19Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h2>Practice Complete!</h2>
+                <p>You scored <span class="score" id="final-score">0 out of 0</span></p>
+            </div>
+            
+            <div class="detailed-results">
+                <div class="result-section">
+                    <div class="result-item">
+                        <div class="result-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="result-info">
+                            <span class="result-number" id="total-questions">0</span>
+                            <span class="result-label">Total Questions</span>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="result-info">
+                            <span class="result-number" id="marks-obtained">0</span>
+                            <span class="result-label">Marks Obtained</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accuracy-section">
+                    <div class="accuracy-bar">
+                        <div class="progress-circle">
+                            <span id="accuracy-percentage">0%</span>
+                        </div>
+                        <div class="accuracy-info">
+                            <span class="accuracy-label">Accuracy Rate</span>
+                            <span class="accuracy-detail" id="accuracy-detail">0 Correct out of 0 Questions</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="answer-summary">
+                    <div class="summary-item correct">
+                        <div class="summary-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-number" id="correct-count">0</span>
+                            <span class="summary-label">Correct Answer</span>
+                        </div>
+                    </div>
+                    <div class="summary-item wrong">
+                        <div class="summary-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-number" id="wrong-count">0</span>
+                            <span class="summary-label">Wrong Answer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="view-answers-btn" onclick="viewAnswers()">View Your Answers</button>
+                <button class="retake-btn" onclick="goBackToSelection()">Create New Practice</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answer Review Page -->
+    <div id="answer-review-page" class="page">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h2>Answer Review</h2>
+            <div class="header-right">
+                <span class="progress" id="answer-progress">1/10</span>
+            </div>
+        </div>
+        
+        <div class="question-container">
+            <div class="question-card">
+                <h3 id="review-question-text">Loading question...</h3>
+            </div>
+            
+            <div class="options-container" id="review-options-container">
+                <!-- Options will be generated by JavaScript -->
+            </div>
+            
+            <div class="solutions-section">
+                <h4>Solutions</h4>
+                <div class="answer-display">
+                    <span class="answer-label">Correct Answer:</span>
+                    <span class="answer-text">Loading...</span>
+                </div>
+                <div class="explanation">
+                    <h5>Explanation</h5>
+                    <p>Loading explanation...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="prev-btn" onclick="previousAnswer()">Previous</button>
+            <div class="progress-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <button class="next-btn" onclick="nextAnswer()">Next</button>
+        </div>
+    </div>
+
+    <script src="script.js?v=1"></script>
+</body>
+</html>

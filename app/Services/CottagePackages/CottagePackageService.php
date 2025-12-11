@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Services\CottagePackages;
+
+use App\Models\CottagePackage;
+use App\Services\Core\BaseService;
+
+class CottagePackageService extends BaseService
+{
+    protected string $modelClass = CottagePackage::class;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Get filter configuration - used for CRUD filters
+     */
+    public function getFilterConfig(): array
+    {
+        return [
+            'status' => [
+                'type' => 'select',
+                'label' => 'Status',
+                'col' => 3,
+                'options' => [
+                    '1' => 'Active',
+                    '0' => 'Inactive',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Get search fields configuration for UI
+     */
+    public function getSearchFieldsConfig(): array
+    {
+        return [
+            'title' => 'Title',
+            'provider' => 'Provider',
+        ];
+    }
+
+    /**
+     * Get default search fields
+     */
+    public function getDefaultSearchFields(): array
+    {
+        return ['title', 'provider'];
+    }
+
+    /**
+     * Get default sorting
+     */
+    public function getDefaultSorting(): array
+    {
+        return ['field' => 'sort_order', 'direction' => 'asc'];
+    }
+
+    public function store(array $data): CottagePackage
+    {
+        $maxSortOrder = $this->model->max('sort_order') ?? 0;
+        $data['sort_order'] = $maxSortOrder + 1;
+
+        return parent::store($data);
+    }
+}

@@ -1,0 +1,8 @@
+rules:
+  - never create migration files
+  - never run database migrations or schema changes
+  - do not create, update, or drop database tables
+  - do not overwrite core/base/architecture-level files (only touch feature or business logic files)
+  - if no database schema information provided or need clarifications ask before start coding
+  - if business logic is not clear, ask before coding
+  - Do not use models directly in the controllers insetad, use services.

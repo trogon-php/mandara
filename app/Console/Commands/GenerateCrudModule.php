@@ -1,0 +1,1201 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+
+class GenerateCrudModule extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'make:crud-module 
+                            {name : The name of the module (singular, e.g., Product)}
+                            {--fields= : Comma-separated list of fields with types (e.g., title:string,description:text,status:integer)}
+                            {--file-fields= : Comma-separated list of file fields (e.g., image,avatar)}
+                            {--force : Overwrite existing files}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Generate a complete CRUD module with Model, Repository, Service, Controller, Requests, Resources, and Views';
+
+    /**
+     * Module name in different formats
+     */
+    protected $moduleName;
+    protected $moduleNamePlural;
+    protected $moduleNameSnake;
+    protected $moduleNameSnakePlural;
+
+    /**
+     * Fields configuration
+     */
+    protected $fields = [];
+    protected $fileFields = [];
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $this->moduleName = Str::studly($this->argument('name'));
+        $this->moduleNamePlural = $this->moduleName . 's';
+        $this->moduleNameSnake = Str::snake($this->moduleName);
+        $this->moduleNameSnakePlural = Str::snake($this->moduleNamePlural);
+
+        $this->parseFields();
+        $this->parseFileFields();
+
+        $this->info("Generating CRUD module: {$this->moduleName}");
+        $this->info("=====================================");
+
+        // Check if files exist and force option
+        if (!$this->option('force') && $this->filesExist()) {
+            if (!$this->confirm('Some files already exist. Do you want to overwrite them?')) {
+                $this->info('Operation cancelled.');
+                return 0;
+            }
+        }
+
+        $this->generateModel();
+        $this->generateRepositoryInterface();
+        $this->generateRepository();
+        $this->generateService();
+        $this->generateStoreRequest();
+        $this->generateUpdateRequest();
+        $this->generateResource();
+        $this->generateCollection();
+        $this->generateController();
+        $this->generateMigration();
+        $this->generateViews();
+        $this->updateRepositoryServiceProvider();
+        $this->updateAdminRoutes();
+        $this->updateImageConfig();
+
+        $this->info('');
+        $this->info('✅ CRUD module generated successfully!');
+        $this->info('');
+        $this->info('Next steps:');
+        $this->info('1. Run: php artisan migrate');
+        $this->info('2. Test the module in admin panel');
+        $this->info('3. Customize views if needed');
+
+        return 0;
+    }
+
+    /**
+     * Parse fields from command option
+     */
+    protected function parseFields()
+    {
+        $fieldsInput = $this->option('fields');
+        if (!$fieldsInput) {
+            // Default fields
+            $this->fields = [
+                'title' => 'string',
+                'description' => 'text',
+                'status' => 'integer',
+            ];
+            return;
+        }
+
+        $fields = explode(',', $fieldsInput);
+        foreach ($fields as $field) {
+            $parts = explode(':', trim($field));
+            if (count($parts) === 2) {
+                $this->fields[trim($parts[0])] = trim($parts[1]);
+            }
+        }
+    }
+
+    /**
+     * Parse file fields from command option
+     */
+    protected function parseFileFields()
+    {
+        $fileFieldsInput = $this->option('file-fields');
+        if ($fileFieldsInput) {
+            $this->fileFields = array_map('trim', explode(',', $fileFieldsInput));
+        }
+    }
+
+    /**
+     * Check if any files already exist
+     */
+    protected function filesExist()
+    {
+        $files = [
+            app_path("Models/{$this->moduleName}.php"),
+            app_path("Repositories/{$this->moduleNamePlural}/{$this->moduleName}RepositoryInterface.php"),
+            app_path("Repositories/{$this->moduleNamePlural}/{$this->moduleName}Repository.php"),
+            app_path("Services/{$this->moduleNamePlural}/{$this->moduleName}Service.php"),
+            app_path("Http/Controllers/Admin/{$this->moduleNamePlural}Controller.php"),
+            resource_path("views/admin/{$this->moduleNameSnakePlural}/index.blade.php"),
+        ];
+
+        foreach ($files as $file) {
+            if (File::exists($file)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Generate Model
+     */
+    protected function generateModel()
+    {
+        $this->info('📄 Generating Model...');
+        
+        $casts = [];
+        $fileFieldsConfig = [];
+        
+        foreach ($this->fields as $field => $type) {
+            switch ($type) {
+                case 'integer':
+                case 'boolean':
+                case 'json':
+                case 'decimal':
+                    $casts[$field] = $type;
+                    break;
+            }
+        }
+
+        // Add default casts
+        $casts['status'] = 'integer';
+        $casts['sort_order'] = 'integer';
+
+        // Generate file fields configuration
+        foreach ($this->fileFields as $field) {
+            $fileFieldsConfig[$field] = [
+                'folder' => $this->moduleNameSnakePlural,
+                'type' => $this->moduleNameSnakePlural . '_' . $field,
+                'single' => true,
+            ];
+        }
+
+        $castsString = $this->arrayToString($casts, 8);
+        $fileFieldsString = $this->arrayToString($fileFieldsConfig, 8);
+
+        $content = "<?php
+
+namespace App\Models;
+
+use App\Models\BaseModel;
+
+class {$this->moduleName} extends BaseModel
+{
+    protected \$casts = {$castsString};
+
+    protected \$fileFields = {$fileFieldsString};
+}
+";
+
+        $this->writeFile(app_path("Models/{$this->moduleName}.php"), $content);
+    }
+
+    /**
+     * Generate Repository Interface
+     */
+    protected function generateRepositoryInterface()
+    {
+        $this->info('📄 Generating Repository Interface...');
+        
+        $content = "<?php
+
+namespace App\Repositories\\{$this->moduleNamePlural};
+
+use App\Repositories\BaseRepositoryInterface;
+
+interface {$this->moduleName}RepositoryInterface extends BaseRepositoryInterface
+{
+    // Add module-specific repository methods here if needed
+}
+";
+
+        $this->ensureDirectoryExists(app_path("Repositories/{$this->moduleNamePlural}"));
+        $this->writeFile(app_path("Repositories/{$this->moduleNamePlural}/{$this->moduleName}RepositoryInterface.php"), $content);
+    }
+
+    /**
+     * Generate Repository
+     */
+    protected function generateRepository()
+    {
+        $this->info('📄 Generating Repository...');
+        
+        $content = "<?php
+
+namespace App\Repositories\\{$this->moduleNamePlural};
+
+use App\Models\\{$this->moduleName};
+use App\Repositories\BaseRepository;
+
+class {$this->moduleName}Repository extends BaseRepository implements {$this->moduleName}RepositoryInterface
+{
+    public function __construct({$this->moduleName} \$model)
+    {
+        parent::__construct(\$model);
+    }
+
+    // Implement any module-specific methods from the interface
+}
+";
+
+        $this->writeFile(app_path("Repositories/{$this->moduleNamePlural}/{$this->moduleName}Repository.php"), $content);
+    }
+
+    /**
+     * Generate Service
+     */
+    protected function generateService()
+    {
+        $this->info('�� Generating Service...');
+        
+        $content = "<?php
+
+namespace App\Services\\{$this->moduleNamePlural};
+
+use App\Services\Core\BaseService;
+use App\Repositories\\{$this->moduleNamePlural}\\{$this->moduleName}RepositoryInterface;
+
+class {$this->moduleName}Service extends BaseService
+{
+    public function __construct({$this->moduleName}RepositoryInterface \$repository)
+    {
+        parent::__construct(\$repository);
+    }
+
+    // Add module-specific business logic here
+}
+";
+
+        $this->ensureDirectoryExists(app_path("Services/{$this->moduleNamePlural}"));
+        $this->writeFile(app_path("Services/{$this->moduleNamePlural}/{$this->moduleName}Service.php"), $content);
+    }
+
+    /**
+     * Generate Store Request
+     */
+    protected function generateStoreRequest()
+    {
+        $this->info('📄 Generating Store Request...');
+        
+        $rules = [];
+        $messages = [];
+        
+        foreach ($this->fields as $field => $type) {
+            $rule = $this->getValidationRule($field, $type);
+            if ($rule) {
+                $rules[$field] = $rule;
+                $messages[$field . '.required'] = ucfirst($field) . ' is required.';
+            }
+        }
+
+        // Add file field validations
+        foreach ($this->fileFields as $field) {
+            $rules[$field] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
+            $messages[$field . '.image'] = 'File must be an image.';
+        }
+
+        $rulesString = $this->arrayToString($rules, 8);
+        $messagesString = $this->arrayToString($messages, 8);
+
+        $content = "<?php
+
+namespace App\Http\Requests\\{$this->moduleNamePlural};
+
+use App\Http\Requests\BaseRequest;
+
+class Store{$this->moduleName}Request extends BaseRequest
+{
+    public function rules(): array
+    {
+        return {$rulesString};
+    }
+
+    public function messages(): array
+    {
+        return {$messagesString};
+    }
+}
+";
+
+        $this->ensureDirectoryExists(app_path("Http/Requests/{$this->moduleNamePlural}"));
+        $this->writeFile(app_path("Http/Requests/{$this->moduleNamePlural}/Store{$this->moduleName}Request.php"), $content);
+    }
+
+    /**
+     * Generate Update Request
+     */
+    protected function generateUpdateRequest()
+    {
+        $this->info('📄 Generating Update Request...');
+        
+        $rules = [];
+        $messages = [];
+        
+        foreach ($this->fields as $field => $type) {
+            $rule = $this->getValidationRule($field, $type);
+            if ($rule) {
+                $rules[$field] = $rule;
+                $messages[$field . '.required'] = ucfirst($field) . ' is required.';
+            }
+        }
+
+        // Add file field validations
+        foreach ($this->fileFields as $field) {
+            $rules[$field] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
+            $messages[$field . '.image'] = 'File must be an image.';
+        }
+
+        $rulesString = $this->arrayToString($rules, 8);
+        $messagesString = $this->arrayToString($messages, 8);
+
+        $content = "<?php
+
+namespace App\Http\Requests\\{$this->moduleNamePlural};
+
+use App\Http\Requests\BaseRequest;
+
+class Update{$this->moduleName}Request extends BaseRequest
+{
+    public function rules(): array
+    {
+        return {$rulesString};
+    }
+
+    public function messages(): array
+    {
+        return {$messagesString};
+    }
+}
+";
+
+        $this->writeFile(app_path("Http/Requests/{$this->moduleNamePlural}/Update{$this->moduleName}Request.php"), $content);
+    }
+
+    /**
+     * Generate Resource
+     */
+    protected function generateResource()
+    {
+        $this->info('📄 Generating Resource...');
+        
+        $fields = [];
+        foreach ($this->fields as $field => $type) {
+            $fields[$field] = "\$this->{$field}";
+        }
+
+        // Add file URL fields
+        foreach ($this->fileFields as $field) {
+            $fields[$field] = "\$this->{$field}_url";
+        }
+
+        $fields['sort_order'] = "\$this->sort_order";
+
+        $fieldsString = $this->arrayToString($fields, 12);
+
+        $content = "<?php
+
+namespace App\Http\Resources\\{$this->moduleNamePlural};
+
+use App\Http\Resources\BaseResource;
+use Illuminate\Http\Request;
+
+class {$this->moduleName}Resource extends BaseResource
+{
+    protected function resourceFields(Request \$request): array
+    {
+        return {$fieldsString};
+    }
+}
+";
+
+        $this->ensureDirectoryExists(app_path("Http/Resources/{$this->moduleNamePlural}"));
+        $this->writeFile(app_path("Http/Resources/{$this->moduleNamePlural}/{$this->moduleName}Resource.php"), $content);
+    }
+
+    /**
+     * Generate Collection
+     */
+    protected function generateCollection()
+    {
+        $this->info('📄 Generating Collection...');
+        
+        $content = "<?php
+
+namespace App\Http\Resources\\{$this->moduleNamePlural};
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+class {$this->moduleName}Collection extends ResourceCollection
+{
+    public function toArray(Request \$request): array
+    {
+        return [
+            'data' => \$this->collection->map(
+                fn (\$item) => (new {$this->moduleName}Resource(\$item))->toArray(\$request)
+            ),
+            'meta' => [
+                'count' => \$this->collection->count(),
+            ],
+        ];
+    }
+}
+";
+
+        $this->writeFile(app_path("Http/Resources/{$this->moduleNamePlural}/{$this->moduleName}Collection.php"), $content);
+    }
+
+    /**
+     * Generate Controller
+     */
+    protected function generateController()
+    {
+        $this->info('📄 Generating Controller...');
+        
+        $content = "<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\AdminBaseController;
+use App\Services\\{$this->moduleNamePlural}\\{$this->moduleName}Service;
+use App\Http\Requests\\{$this->moduleNamePlural}\\Store{$this->moduleName}Request as StoreRequest;
+use App\Http\Requests\\{$this->moduleNamePlural}\\Update{$this->moduleName}Request as UpdateRequest;
+
+class {$this->moduleNamePlural}Controller extends AdminBaseController
+{
+    protected {$this->moduleName}Service \$service;
+
+    public function __construct({$this->moduleName}Service \$service)
+    {
+        \$this->service = \$service;
+    }
+
+    // List all items
+    public function index()
+    {
+        return view('admin.{$this->moduleNameSnakePlural}.index', [
+            'page_title' => '{$this->moduleNamePlural}',
+            'list_items' => \$this->service->getAll(),
+        ]);
+    }
+
+    // Show add form (AJAX modal)
+    public function create()
+    {
+        return view('admin.{$this->moduleNameSnakePlural}.create', [
+            'page_title' => 'Add {$this->moduleName}',
+        ]);
+    }
+
+    // Handle add form submission
+    public function store(StoreRequest \$request)
+    {
+        \$this->service->store(\$request->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'message' => '{$this->moduleName} added successfully',
+        ]);
+    }
+
+    // Show edit form (AJAX modal)
+    public function edit(\$id)
+    {
+        \${$this->moduleNameSnake} = \$this->service->find(\$id);
+
+        return view('admin.{$this->moduleNameSnakePlural}.edit', [
+            'page_title' => 'Edit {$this->moduleName}',
+            'edit_data' => \${$this->moduleNameSnake},
+        ]);
+    }
+
+    // Handle edit form submission
+    public function update(UpdateRequest \$request, \$id)
+    {
+        \$this->service->update(\$id, \$request->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'message' => '{$this->moduleName} updated successfully',
+        ]);
+    }
+
+    // Show single item
+    public function show(\$id)
+    {
+        return view('admin.{$this->moduleNameSnakePlural}.show', [
+            'page_title' => '{$this->moduleName} Details',
+            '{$this->moduleNameSnake}' => \$this->service->find(\$id),
+        ]);
+    }
+
+    // Show sort view
+    public function sortView(Request \$request)
+    {
+        return view('admin.{$this->moduleNameSnakePlural}.sort', [
+            'list_items' => \$this->service->getAll(),
+        ]);
+    }
+
+    // Handle sort update
+    public function sortUpdate(Request \$request)
+    {
+        \$this->service->sortUpdate(\$request->order);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sort order updated successfully',
+        ]);
+    }
+
+    // Delete an item
+    public function destroy(\$id)
+    {
+        \$this->service->delete(\$id);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Item deleted successfully',
+        ]);
+    }
+
+    // Bulk delete items
+    public function bulkDelete(Request \$request)
+    {
+        \$this->service->bulkDelete(\$request->ids);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Selected items deleted successfully',
+        ]);
+    }
+
+    // Clone item
+    public function cloneItem(\$id)
+    {
+        \${$this->moduleNameSnake} = \$this->service->find(\$id);
+        \$cloned = \$this->service->clone(\${$this->moduleNameSnake});
+
+        if (!\$cloned) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to clone item.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Item cloned successfully.',
+            'action' => 'modal', // or 'redirect'
+            'url' => route('admin.{$this->moduleNameSnakePlural}.edit', \$cloned->id),
+        ]);
+    }
+}
+";
+
+        $this->writeFile(app_path("Http/Controllers/Admin/{$this->moduleNamePlural}Controller.php"), $content);
+    }
+
+    /**
+     * Generate Migration
+     */
+    protected function generateMigration()
+    {
+        $this->info('📄 Generating Migration...');
+        
+        $tableName = $this->moduleNameSnakePlural;
+        $fields = [];
+        
+        foreach ($this->fields as $field => $type) {
+            switch ($type) {
+                case 'string':
+                    $fields[] = "\$table->string('{$field}');";
+                    break;
+                case 'text':
+                    $fields[] = "\$table->text('{$field}')->nullable();";
+                    break;
+                case 'integer':
+                    $fields[] = "\$table->integer('{$field}')->default(1);";
+                    break;
+                case 'boolean':
+                    $fields[] = "\$table->boolean('{$field}')->default(false);";
+                    break;
+                case 'json':
+                    $fields[] = "\$table->json('{$field}')->nullable();";
+                    break;
+                case 'decimal':
+                    $fields[] = "\$table->decimal('{$field}', 10, 2)->nullable();";
+                    break;
+            }
+        }
+
+        // Add file fields
+        foreach ($this->fileFields as $field) {
+            $fields[] = "\$table->string('{$field}')->nullable();";
+        }
+
+        $fieldsString = implode("\n            ", $fields);
+
+        $content = "<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('{$tableName}', function (Blueprint \$table) {
+            \$table->id();
+            {$fieldsString}
+            \$table->integer('sort_order')->default(0);
+            \$table->timestamps();
+            \$table->softDeletes();
+            
+            // Audit fields
+            \$table->unsignedBigInteger('created_by')->nullable();
+            \$table->unsignedBigInteger('updated_by')->nullable();
+            \$table->unsignedBigInteger('deleted_by')->nullable();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('{$tableName}');
+    }
+};
+";
+
+        $migrationName = 'create_' . $this->moduleNameSnakePlural . '_table';
+        $migrationPath = database_path('migrations/' . date('Y_m_d_His') . '_' . $migrationName . '.php');
+        $this->writeFile($migrationPath, $content);
+    }
+
+    /**
+     * Generate Views
+     */
+    protected function generateViews()
+    {
+        $this->info('📄 Generating Views...');
+        
+        $this->generateIndexView();
+        $this->generateCreateView();
+        $this->generateEditView();
+        $this->generateShowView();
+        $this->generateSortView();
+        $this->generateIndexTableView();
+    }
+
+    /**
+     * Generate Index View
+     */
+    protected function generateIndexView()
+    {
+        $tableHead = $this->generateTableHead();
+        
+        $content = "@include('admin.crud.crud-index-layout', [
+    'page_title'    => '{$this->moduleNamePlural}',
+    'createUrl'     => url('admin/{$this->moduleNameSnakePlural}/create'),
+    'sortUrl'       => url('admin/{$this->moduleNameSnakePlural}/sort'),
+    'bulkDeleteUrl' => url('admin/{$this->moduleNameSnakePlural}/bulk-delete'),
+    'redirectUrl'   => url('admin/{$this->moduleNameSnakePlural}'),
+    'tableId'       => '{$this->moduleNameSnakePlural}-table',
+    'list_items'    => \$list_items,
+    'breadcrumbs'   => [
+        'Dashboard' => url('admin/dashboard'),
+        '{$this->moduleNamePlural}'   => null,
+    ],
+    'tableHead'     => '{$tableHead}',
+    'tableBody'     => view('admin.{$this->moduleNameSnakePlural}.index-table', compact('list_items'))
+])";
+
+        $this->ensureDirectoryExists(resource_path("views/admin/{$this->moduleNameSnakePlural}"));
+        $this->writeFile(resource_path("views/admin/{$this->moduleNameSnakePlural}/index.blade.php"), $content);
+    }
+
+    /**
+     * Generate Create View
+     */
+    protected function generateCreateView()
+    {
+        $fields = $this->generateFormFields();
+        $fieldsString = $this->arrayToString($fields, 4);
+        
+        $content = "@include('admin.crud.form', [
+    'action' => route('admin.{$this->moduleNameSnakePlural}.store'),
+    'formId' => 'add-{$this->moduleNameSnake}-form',
+    'submitText' => 'Save {$this->moduleName}',
+    'class'      => 'ajax-crud-form',
+    'redirect'   => route('admin.{$this->moduleNameSnakePlural}.index'),
+    'fields' => {$fieldsString}
+])";
+
+        $this->writeFile(resource_path("views/admin/{$this->moduleNameSnakePlural}/create.blade.php"), $content);
+    }
+
+    /**
+     * Generate Edit View
+     */
+    protected function generateEditView()
+    {
+        $fields = $this->generateFormFields(true);
+        $fieldsString = $this->arrayToString($fields, 4);
+        
+        $content = "@include('admin.crud.form', [
+    'action'     => route('admin.{$this->moduleNameSnakePlural}.update', \$edit_data->id),
+    'method'     => 'PUT',
+    'formId'     => 'edit-{$this->moduleNameSnake}-form',
+    'submitText' => 'Update {$this->moduleName}',
+    'class'      => 'ajax-crud-form',
+    'redirect'   => route('admin.{$this->moduleNameSnakePlural}.index'),
+    'fields' => {$fieldsString}
+])";
+
+        $this->writeFile(resource_path("views/admin/{$this->moduleNameSnakePlural}/edit.blade.php"), $content);
+    }
+
+    /**
+     * Generate Show View
+     */
+    protected function generateShowView()
+    {
+        $content = "@extends('admin.layouts.app')
+@section('content')
+
+{{ show_window_title(\$page_title) }}
+
+<h1>{$this->moduleName} View</h1>
+<a href=\"{{ url('admin/{$this->moduleNameSnakePlural}') }}\" class=\"trogon-link btn btn-primary\">Back</a>
+
+@endsection";
+
+        $this->writeFile(resource_path("views/admin/{$this->moduleNameSnakePlural}/show.blade.php"), $content);
+    }
+
+    /**
+     * Generate Sort View
+     */
+    protected function generateSortView()
+    {
+        $titleField = $this->getTitleField();
+        $subtitleField = $this->getSubtitleField();
+        $extraField = $this->getExtraField();
+        
+        $content = "@include('admin.crud.sort', [
+    'formId'      => 'sort-{$this->moduleNameSnakePlural}-form',
+    'saveUrl'     => route('admin.{$this->moduleNameSnakePlural}.sort.update'),
+    'redirectUrl' => route('admin.{$this->moduleNameSnakePlural}.index'),
+    'items'       => \$list_items,
+    'config'      => [
+        'title'    => '{$titleField}',
+        'subtitle' => '{$subtitleField}',
+        'extra'    => '{$extraField}'
+    ]
+])";
+
+        $this->writeFile(resource_path("views/admin/{$this->moduleNameSnakePlural}/sort.blade.php"), $content);
+    }
+
+    /**
+     * Generate Index Table View
+     */
+    protected function generateIndexTableView()
+    {
+        $tableRows = $this->generateTableRows();
+        
+        $content = "@if (\$list_items)
+    @foreach (\$list_items as \$key => \$list_item)
+        <tr>
+            <td><input type=\"checkbox\" class=\"form-check-input row-checkbox\" value=\"{{ \$list_item->id }}\"></td>
+            <td>{{ \$key + 1 }}</td>
+{$tableRows}
+            <td><small>{{ \$list_item->updated_at->format('d-m-Y, g:i A') }}</small></td>
+            <td>
+                @include('admin.crud.action-dropdown', [
+                    'cloneUrl'    => url('admin/{$this->moduleNameSnakePlural}/'.\$list_item->id.'/clone'),
+                    'cloneTitle'  => 'Clone {$this->moduleName}',
+                    'editUrl'     => url('admin/{$this->moduleNameSnakePlural}/'.\$list_item->id.'/edit'),
+                    'editTitle'   => 'Update {$this->moduleName}',
+                    'deleteUrl'   => route('admin.{$this->moduleNameSnakePlural}.destroy', \$list_item->id),
+                    'redirectUrl' => route('admin.{$this->moduleNameSnakePlural}.index')
+                ])
+            </td>
+        </tr>
+    @endforeach
+@endif";
+
+        $this->writeFile(resource_path("views/admin/{$this->moduleNameSnakePlural}/index-table.blade.php"), $content);
+    }
+
+    /**
+     * Generate Table Head
+     */
+    protected function generateTableHead()
+    {
+        $columns = ['<th><input type="checkbox" id="select-all-bulk" class="form-check-input"></th>', '<th>#</th>'];
+        
+        foreach ($this->fields as $field => $type) {
+            $columns[] = "<th>" . ucfirst(str_replace('_', ' ', $field)) . "</th>";
+        }
+        
+        // Add file field columns
+        foreach ($this->fileFields as $field) {
+            $columns[] = "<th>" . ucfirst(str_replace('_', ' ', $field)) . "</th>";
+        }
+        
+        $columns[] = '<th>Status</th>';
+        $columns[] = '<th>Updated</th>';
+        $columns[] = '<th>Action</th>';
+        
+        return implode("\n            ", $columns);
+    }
+
+    /**
+     * Generate Form Fields
+     */
+    protected function generateFormFields($isEdit = false)
+    {
+        $fields = [];
+        
+        foreach ($this->fields as $field => $type) {
+            $fieldConfig = $this->getFormFieldConfig($field, $type, $isEdit);
+            if ($fieldConfig) {
+                $fields[] = $fieldConfig;
+            }
+        }
+        
+        // Add file fields
+        foreach ($this->fileFields as $field) {
+            $fields[] = [
+                'type' => 'image',
+                'name' => $field,
+                'label' => ucfirst(str_replace('_', ' ', $field)),
+                'presetKey' => $this->moduleNameSnakePlural . '_' . $field,
+                'circle' => true,
+                'value' => $isEdit ? "old('{$field}', \$edit_data->{$field} ?? null)" : null
+            ];
+        }
+        
+        // Add status field
+        $fields[] = [
+            'type' => 'select',
+            'name' => 'status',
+            'id' => 'status',
+            'label' => 'Status',
+            'required' => true,
+            'options' => [1 => 'Published', 0 => 'Draft'],
+            'col' => 6,
+            'value' => $isEdit ? "old('status', \$edit_data->status)" : null
+        ];
+        
+        return $fields;
+    }
+
+    /**
+     * Get Form Field Configuration
+     */
+    protected function getFormFieldConfig($field, $type, $isEdit = false)
+    {
+        $config = [
+            'name' => $field,
+            'id' => $field,
+            'label' => ucfirst(str_replace('_', ' ', $field)),
+            'placeholder' => 'Enter ' . ucfirst(str_replace('_', ' ', $field)),
+            'required' => in_array($field, ['title', 'name', 'email']),
+            'col' => $type === 'text' ? 12 : 6
+        ];
+        
+        if ($isEdit) {
+            $config['value'] = "old('{$field}', \$edit_data->{$field})";
+        }
+        
+        switch ($type) {
+            case 'text':
+                $config['type'] = 'textarea';
+                break;
+            case 'integer':
+                $config['type'] = 'number';
+                break;
+            case 'decimal':
+                $config['type'] = 'number';
+                $config['step'] = '0.01';
+                break;
+            case 'boolean':
+                $config['type'] = 'select';
+                $config['options'] = [1 => 'Yes', 0 => 'No'];
+                break;
+            default:
+                $config['type'] = 'text';
+        }
+        
+        return $config;
+    }
+
+    /**
+     * Generate Table Rows
+     */
+    protected function generateTableRows()
+    {
+        $rows = [];
+        
+        foreach ($this->fields as $field => $type) {
+            if ($field === 'status') continue; // Skip status, handled separately
+            
+            $rows[] = "            <td>{{ \$list_item->{$field} }}</td>";
+        }
+        
+        // Add file field rows
+        foreach ($this->fileFields as $field) {
+            $rows[] = "            <td>
+                @if(\$list_item->{$field}_url)
+                    <img src=\"{{ \$list_item->{$field}_url }}\" class=\"img-thumbnail\" style=\"width:50px;height:50px;\">
+                @else
+                    <span class=\"text-muted\">No image</span>
+                @endif
+            </td>";
+        }
+        
+        // Add status row
+        $rows[] = "            <td>
+                @if (\$list_item->status)
+                    <span class=\"badge bg-success\"><i class=\"mdi mdi-check\"></i> Active</span>
+                @else
+                    <span class=\"badge bg-danger\"><i class=\"mdi mdi-close\"></i> Inactive</span>
+                @endif
+            </td>";
+        
+        return implode("\n", $rows);
+    }
+
+    /**
+     * Get Title Field for Sort View
+     */
+    protected function getTitleField()
+    {
+        $titleFields = ['title', 'name', 'user_name'];
+        foreach ($titleFields as $field) {
+            if (isset($this->fields[$field])) {
+                return $field;
+            }
+        }
+        return array_keys($this->fields)[0] ?? 'id';
+    }
+
+    /**
+     * Get Subtitle Field for Sort View
+     */
+    protected function getSubtitleField()
+    {
+        $subtitleFields = ['description', 'designation', 'subtitle'];
+        foreach ($subtitleFields as $field) {
+            if (isset($this->fields[$field])) {
+                return $field;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get Extra Field for Sort View
+     */
+    protected function getExtraField()
+    {
+        $extraFields = ['content', 'excerpt', 'summary'];
+        foreach ($extraFields as $field) {
+            if (isset($this->fields[$field])) {
+                return $field;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Update Repository Service Provider
+     */
+    protected function updateRepositoryServiceProvider()
+    {
+        $this->info('📄 Updating Repository Service Provider...');
+        
+        $providerPath = app_path('Providers/RepositoryServiceProvider.php');
+        $content = File::get($providerPath);
+        
+        // Add import
+        $import = "use App\Repositories\\{$this->moduleNamePlural}\\{$this->moduleName}Repository;\nuse App\Repositories\\{$this->moduleNamePlural}\\{$this->moduleName}RepositoryInterface;";
+        
+        // Find the last use statement and add after it
+        $content = preg_replace('/(use App\\\\Repositories\\\\[^;]+;)/', "$1\n$import", $content, 1);
+        
+        // Add binding in register method
+        $binding = "\$this->app->bind({$this->moduleName}RepositoryInterface::class, {$this->moduleName}Repository::class);";
+        
+        // Find the last binding and add after it
+        $content = preg_replace('/(\$this->app->bind\([^;]+\);)/', "$1\n        $binding", $content, 1);
+        
+        File::put($providerPath, $content);
+    }
+
+    /**
+     * Update Admin Routes
+     */
+    protected function updateAdminRoutes()
+    {
+        $this->info('📄 Updating Admin Routes...');
+        
+        $routesPath = base_path('routes/admin.php');
+        $content = File::get($routesPath);
+        
+        // Add controller import
+        $import = "use App\Http\Controllers\Admin\\{$this->moduleNamePlural}Controller;";
+        $content = preg_replace('/(use App\\\\Http\\\\Controllers\\\\Admin\\\\[^;]+;)/', "$1\n$import", $content, 1);
+        
+        // Add routes
+        $routes = "
+        // {$this->moduleName} routes
+        Route::prefix('{$this->moduleNameSnakePlural}')->name('{$this->moduleNameSnakePlural}.')->controller({$this->moduleNamePlural}Controller::class)->group(function () {
+            Route::get('sort', 'sortView')->name('sort.view');
+            Route::post('sort', 'sortUpdate')->name('sort.update');
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+            Route::post('/{{$this->moduleNameSnake}}/clone', 'cloneItem')->name('clone');
+        });
+
+        Route::resource('{$this->moduleNameSnakePlural}', {$this->moduleNamePlural}Controller::class);";
+        
+        // Add before the closing of the admin group - SIMPLIFIED APPROACH
+        $content = str_replace('});', "$routes\n\n    });", $content);
+        
+        File::put($routesPath, $content);
+    }
+
+    /**
+     * Update Image Config
+     */
+    protected function updateImageConfig()
+    {
+        if (empty($this->fileFields)) {
+            return;
+        }
+
+        $this->info('📄 Updating Image Config...');
+        
+        $configPath = config_path('images.php');
+        if (!File::exists($configPath)) {
+            $this->warn('Image config file not found. Please add presets manually.');
+            return;
+        }
+
+        $content = File::get($configPath);
+        
+        // Add presets
+        foreach ($this->fileFields as $field) {
+            $presetName = $this->moduleNameSnakePlural . '_' . $field;
+            $preset = "'{$presetName}' => [800, 600],";
+            
+            // Find presets array and add preset
+            $content = preg_replace('/(\'presets\'\s*=>\s*\[)/', "$1\n        $preset", $content, 1);
+            
+            // Add fallback
+            $fallback = "'{$presetName}' => 'images/default-{$this->moduleNameSnake}-{$field}.jpg',";
+            $content = preg_replace('/(\'fallbacks\'\s*=>\s*\[)/', "$1\n        $fallback", $content, 1);
+        }
+        
+        File::put($configPath, $content);
+    }
+
+    /**
+     * Get validation rule for field
+     */
+    protected function getValidationRule($field, $type)
+    {
+        switch ($field) {
+            case 'title':
+            case 'name':
+                return 'required|string|max:255';
+            case 'description':
+            case 'content':
+                return 'nullable|string|max:1000';
+            case 'status':
+                return 'required|in:0,1';
+            case 'email':
+                return 'required|email|max:255';
+            case 'phone':
+                return 'nullable|string|max:20';
+            default:
+                switch ($type) {
+                    case 'string':
+                        return 'required|string|max:255';
+                    case 'text':
+                        return 'nullable|string';
+                    case 'integer':
+                        return 'required|integer';
+                    case 'boolean':
+                        return 'boolean';
+                    case 'decimal':
+                        return 'nullable|numeric';
+                    default:
+                        return 'nullable|string';
+                }
+        }
+    }
+
+    /**
+     * Convert array to PHP string representation
+     */
+    protected function arrayToString($array, $indent = 0)
+    {
+        if (empty($array)) {
+            return '[]';
+        }
+
+        $spaces = str_repeat(' ', $indent);
+        $lines = ["["];
+        
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $valueString = $this->arrayToString($value, $indent + 8);
+                $lines[] = "{$spaces}    '{$key}' => {$valueString},";
+            } else {
+                $valueString = is_string($value) ? "'{$value}'" : $value;
+                $lines[] = "{$spaces}    '{$key}' => {$valueString},";
+            }
+        }
+        
+        $lines[] = "{$spaces}]";
+        
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Ensure directory exists
+     */
+    protected function ensureDirectoryExists($path)
+    {
+        if (!File::exists($path)) {
+            File::makeDirectory($path, 0755, true);
+        }
+    }
+
+    /**
+     * Write file content
+     */
+    protected function writeFile($path, $content)
+    {
+        $this->ensureDirectoryExists(dirname($path));
+        File::put($path, $content);
+        $this->line("   ✓ Created: " . str_replace(base_path() . '/', '', $path));
+    }
+}

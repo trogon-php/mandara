@@ -1,0 +1,46 @@
+# Modules
+Here are the all modules of the project:
+
+- Users // tick 
+- Courses
+    - Categories
+    - Programs
+    - Courses
+    - CourseUnits
+    - CourseMaterials
+- Videos
+- Exams
+- Quizes
+- LiveClasses
+- Documents
+- Notes
+- Scorms
+- Homeworks
+- Assignments
+----
+- Batches / Cohorts
+- Question Bank
+- Library
+- Payments
+- Packages
+- Subscriptions
+- Discounts
+- Certificates
+- Gamification
+- Chat (Single/ Group)
+- Feed Categories
+- Feed
+- Reviews ✅
+- Testimonials ✅
+- Surveys
+- Notifications
+- Support
+- Reports
+- Analytics
+- CRM
+- CMS (Pages, blog, static content (About, FAQ, Policies))
+- Integrations
+- AI Module
+- Institutions
+- Attendance
+

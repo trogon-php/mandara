@@ -1,0 +1,8 @@
+<?php
+
+return [
+    'project_id' => env('FIREBASE_PROJECT_ID'),
+    'credentials' => [
+        'path' => env('FIREBASE_CREDENTIALS_PATH'),
+    ],
+];

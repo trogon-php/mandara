@@ -1,0 +1,1 @@
+New Live Class: {{ $live_class_title }}

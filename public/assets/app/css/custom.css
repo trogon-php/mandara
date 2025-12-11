@@ -1,0 +1,380 @@
+/*
+Template Name: Velzon - Admin & Dashboard Template
+Author: Themesbrand
+Website: https://themesbrand.com/
+Contact: support@themesbrand.com
+File: Custom Css File
+*/
+/*.btn-md{*/
+/*    padding: 5px 10px;*/
+/*}*/
+
+.shadow-pro{
+  box-shadow: 5px 1px 15px rgba(0, 0, 0, 0.06);
+}
+
+.btn-round-srs{
+    border-radius: 35px;
+}
+
+.btn-round-new-srs{
+    border-radius: 25px;
+}
+.edit-item-btn i{
+    color: white;
+}
+
+.table-overflow-responsive-srs{
+    overflow-x: auto;
+}
+
+.dashboardminicard.card {
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+border-radius: 50px;
+}
+
+.dashboardminicard.card:hover {
+transform: translateY(-10px);
+box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+border-radius: 50px;
+}
+
+.dashboardminicard.card .card-body {
+transition: background-color 0.3s ease;
+border-radius: 50px;
+}
+
+.dashboardminicard.card:hover .card-body {
+  background-color: #f0ebe1;
+  border-radius: 50px;
+}
+
+.dashboardminicard.card .avatar-title {
+transition: transform 0.3s ease;
+}
+
+.dashboardminicard.card:hover .avatar-title {
+transform: rotate(360deg);
+}
+
+@media (min-width: 1200px) {
+.col-lg-2-4 {
+  flex: 0 0 auto;
+  width: 20%;
+}
+}
+.custom-rounded-40px-srs{
+        border-radius: 40px;
+      }
+.custom-rounded-2-em{
+    border-radius: 2em;
+}
+.custom-rounded-2-em .form-control {
+  border-radius: 2em;
+}
+
+.remove-defaults-of-lists{
+    text-decoration: none;
+}
+.custom-card-srs {
+  border-radius: 15px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.custom-card-srs:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* .purple-to-blue-gradient-srs{
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+.red-to-orange-gradient-srs{
+  background: linear-gradient(135deg, #ff2670, #ff8008);
+} */
+.custom-card-header-srs {
+  color: white;
+  padding: 15px 20px;
+}
+
+.custom-card-header-srs h6 {
+  margin: 0;
+}
+
+.sub-text-srs {
+  display: block;
+  font-size: 0.8rem;
+  
+}
+.custom-card-body-for-course-page-srs{
+  padding: 10px;
+}
+.custom-card-body-srs {
+  padding:  10px 25px;
+}
+
+.custom-card-body-srs p {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.custom-card-footer-srs {
+  padding: 10px 20px;
+  background-color: #f7f7f7;
+  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-card-footer-srs a {
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+
+.btn-custom-srs {
+  background-color: transparent;
+  border: none;
+  font-size: 18px;
+  transition: color 0.3s;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.btn-edit-srs {
+  color: #2575fc;
+}
+
+.btn-edit-srs:hover {
+  color: #0056b3;
+}
+
+.btn-delete-srs {
+  color: #dc3545;
+}
+
+.btn-delete-srs:hover {
+  color: #a71d2a;
+}
+
+/*.btn, input.form-control, input.form-select{*/
+.btn{
+    border-radius:2em;
+}
+
+/*input.form-control, input.form-select option:first-child{*/
+/*    border-radius:2em;*/
+/*}*/
+
+/* Hover animation for navbar items */
+.navbar-nav .nav-item .nav-link {
+    transition: all 0.1s ease-in-out;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    background-color: #f0ebe1; /* Change the background color on hover */
+    color: #000; /* Change the text color on hover */
+    transform: translateX(15px); /* Slightly increase the size of the item */
+}
+
+.bg-primary, .btn-primary{
+    /* background-color: #EE3264; */
+    border-color: #508066 !important;
+    background: linear-gradient(to left, #508066, #19341a) !important;
+    transition: all 0.3s ease-in-out;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bg-primary:hover, .btn-primary:hover{
+    background: linear-gradient(to left, #508066, #19341a) !important;
+    border-color: #508066 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bg-light-primary, .btn-light-primary{
+  /* background-color: #EE3264; */
+  border-color: #88b1d8 !important;
+  background: linear-gradient(to right, #ffffff, #ddecff) !important;
+  transition: all 0.3s ease-in-out;
+  transform: translateY(0);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.bg-light-primary:hover, .btn-light-primary:hover{
+  background: linear-gradient(to left, #508066, #19341a) !important;
+  border-color: #508066 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: #fff !important;
+}
+
+.btn-outline-primary{
+    border-color: currentcolor;
+    color: #508066;
+}
+.btn-outline-primary:hover{
+  background: linear-gradient(to left, #508066, #19341a) !important;
+    border-color: #508066;
+}
+
+
+
+
+ /* Placeholder styling during drag */
+ .sortable-placeholder {
+  background: #f0f0f0;
+  border: 2px dashed #ccc;
+  height: 55px; /* approximate to list item height */
+  margin-bottom: 5px;
+  border-radius: 6px;
+}
+
+/* During dragging */
+.sortable-item.dragging {
+  background: #fff3cd;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  opacity: 0.9;
+}
+
+/* Improve cursor feel */
+.sortable .sortable-item {
+  cursor: grab;
+}
+
+.sortable .sortable-item:active {
+  cursor: grabbing;
+}
+
+
+/* General cropper preview box */
+.cropper-preview {
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  border-radius: 4px;
+  background: #f8f9fa;
+  text-align: center;
+  display: none;
+  margin-top: 10px;
+}
+
+/* Image inside preview */
+.cropper-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Circular profile previews */
+.cropper-preview.rounded-circle img {
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+/* Current image box */
+.cropper-current {
+  padding: 10px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  display: inline-block;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+
+
+input[type="text"], input[type="number"], input[type="date"], select, .select2-container .select2-selection--single {
+  /* border-radius: 20px!important; */
+  border: 1px solid #ced4da!important;
+  background-color: #fff!important;
+  color: #495057!important;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, .select2-container--default.select2-container--focus .select2-selection--single {
+  border-color: #80bdff!important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25)!important;
+  outline: 0!important;
+}
+
+.select2-container--default .select2-selection--single {
+  border: 1px solid #ced4da;
+  background-color: #fff;
+  color: #495057;
+  height: 38px;
+  line-height: 36px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #495057;
+}
+/* Stat Cards */
+.stat-card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(59, 116, 168, 0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(59, 116, 168, 0.15);
+}
+.avatar-md {
+    height: 4rem;
+    width: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-lg {
+    height: 5rem;
+    width: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-sm {
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Update avatar colors to match blue theme */
+.avatar-md.bg-primary-subtle {
+    background-color: rgba(59, 116, 168, 0.1) !important;
+}
+
+.avatar-md.bg-info-subtle {
+    background-color: rgba(59, 116, 168, 0.1) !important;
+}
+
+.avatar-md.bg-success-subtle {
+    background-color: rgba(28, 62, 104, 0.1) !important;
+}
+
+.avatar-md.bg-warning-subtle {
+    background-color: rgba(59, 116, 168, 0.1) !important;
+}
+
+/* Update icon colors */
+.avatar-md i {
+    color: #508066 !important;
+}
+/* Hover dropdown for action dropdowns */
+.dropdown:hover > .dropdown-menu {
+  display: block !important;
+  position: absolute;
+  inset: 0px 0px auto auto;
+  margin: 0px;
+  transform: translate3d(0px, 28.8px, 0px);
+}

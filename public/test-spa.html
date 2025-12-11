@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPA Navigation Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .test-link { display: inline-block; margin: 5px; padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+        .test-link:hover { background: #0056b3; }
+        .status { margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h1>SPA Navigation Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Links (should work with SPA)</h3>
+        <a href="/admin/dashboard" class="test-link trogon-link">Dashboard</a>
+        <a href="/admin/categories" class="test-link trogon-link">Categories</a>
+        <a href="/admin/students" class="test-link trogon-link">Students</a>
+    </div>
+    
+    <div class="test-section">
+        <h3>External Links (should NOT use SPA)</h3>
+        <a href="https://google.com" class="test-link" target="_blank">Google (External)</a>
+        <a href="https://laravel.com" class="test-link">Laravel (External)</a>
+    </div>
+    
+    <div class="test-section">
+        <h3>Status</h3>
+        <div id="status" class="status">Loading SPA Navigation...</div>
+    </div>
+
+    <script>
+        // Mock the SPA navigation for testing
+        window.SPANavigation = {
+            loadPage: function(url) {
+                document.getElementById('status').innerHTML = 'SPA Navigation triggered for: ' + url;
+                console.log('SPA Navigation would load:', url);
+            },
+            isExternal: function(url) {
+                try {
+                    const urlObj = new URL(url, window.location.origin);
+                    return urlObj.origin !== window.location.origin;
+                } catch (e) {
+                    return false;
+                }
+            }
+        };
+
+        // Test link interception
+        $(document).ready(function() {
+            $('#status').html('SPA Navigation loaded successfully!');
+            
+            // Test link click handling
+            $(document).on('click', 'a.trogon-link', function(e) {
+                const href = $(this).attr('href');
+                if (window.SPANavigation.isExternal(href)) {
+                    return; // Let browser handle external links
+                }
+                
+                e.preventDefault();
+                window.SPANavigation.loadPage(href);
+            });
+        });
+    </script>
+</body>
+</html>
