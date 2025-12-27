@@ -45,30 +45,6 @@ class User extends BaseAuthModel
     }
 
     /**
-     * Relationship with CourseTutor
-     */
-    public function courseTutors()
-    {
-        return $this->hasMany(CourseTutor::class);
-    }
-
-    /**
-     * Get courses where user is a primary tutor
-     */
-    public function primaryTutorCourses()
-    {
-        return $this->hasMany(CourseTutor::class)->primary();
-    }
-
-    /**
-     * Get courses where user is an assistant tutor
-     */
-    public function assistantTutorCourses()
-    {
-        return $this->hasMany(CourseTutor::class)->assistant();
-    }
-
-    /**
      * Find user by phone and country code
      */
     public static function findByPhone(string $phone, string $countryCode): ?User

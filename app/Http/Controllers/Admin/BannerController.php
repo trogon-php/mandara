@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Services\{
     Banners\BannerService,
-    Courses\CourseService
 };
 use App\Http\Requests\Banners\{
     StoreBannerRequest as StoreRequest,
@@ -16,7 +15,7 @@ use App\Http\Requests\Banners\{
 class BannerController extends AdminBaseController
 {
 
-    public function __construct(private BannerService $service, private CourseService $courseService)
+    public function __construct(private BannerService $service)
     {
     }
 
@@ -54,9 +53,9 @@ class BannerController extends AdminBaseController
     // show add form (AJAX modal)
     public function create()
     {
-        $courses = $this->courseService->getIdTitle();
+        // $courses = $this->courseService->getIdTitle();
         return view('admin.banners.create', [
-            'courses' => $courses,
+            // 'courses' => $courses,
         ]);
     }
 

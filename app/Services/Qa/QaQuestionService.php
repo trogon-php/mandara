@@ -112,20 +112,17 @@ class QaQuestionService extends BaseService
      */
     public function getQuestionsPaginated(int $perPage = 10, ?int $categoryId = null): LengthAwarePaginator
     {
-        $cacheKey = $categoryId ? "published:category:{$categoryId}" : 'published:all';
         
-        return $this->remember($cacheKey, function () use ($categoryId, $perPage) {
-            $query = $this->model
-                ->where('status', 1)
-                ->with(['category', 'user', 'answers.user','answers.question', 'votes'])
-                ->orderBy('created_at', 'asc');
+        $query = $this->model
+            ->where('status', 1)
+            ->with(['category', 'user', 'answers.user','answers.question', 'votes'])
+            ->orderBy('created_at', 'asc');
 
-            if ($categoryId) {
-                $query->where('category_id', $categoryId);
-            }
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
 
-            return $query->paginate($perPage);
-        });
+        return $query->paginate($perPage);
     }
 
     /**

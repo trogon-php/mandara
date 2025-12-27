@@ -4,7 +4,7 @@
             <td><input type="checkbox" class="form-check-input row-checkbox" value="{{ $list_item->id }}"></td>
             <td>{{ $loop->iteration }}</td>
             <td>
-                <h6>{{ $list_item->title }}</h6>
+                <h6>{{ $list_item->content }}</h6>
             </td>
             <td>
                 @if($list_item->feed_image_url && is_array($list_item->feed_image_url) && count($list_item->feed_image_url) > 0)

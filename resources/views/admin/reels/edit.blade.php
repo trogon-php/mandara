@@ -22,6 +22,7 @@
             'id' => 'reel_category_id',
             'label' => 'Reel Category',
             'options' => $reelCategories ?? [],
+            'required' => true,
             'value' => old('reel_category_id', $edit_data->reel_category_id),
             'col' => 6
         ],

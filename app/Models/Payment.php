@@ -45,6 +45,37 @@ class Payment extends BaseModel
      */
     public function package()
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsTo(CottagePackage::class);
+    }
+    /**
+     * Scope to filter by payment status
+     */
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('payment_status', $status);
+    }
+
+    /**
+     * Scope to filter by user
+     */
+    public function scopeByUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Scope to filter by package
+     */
+    public function scopeByPackage($query, $packageId)
+    {
+        return $query->where('package_id', $packageId);
+    }
+
+    /**
+     * Scope to filter by order
+     */
+    public function scopeByOrder($query, $orderId)
+    {
+        return $query->where('order_id', $orderId);
     }
 }

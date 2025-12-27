@@ -9,8 +9,8 @@ class Role extends BaseModel
 {
     // Role constants
     const ADMIN     = RoleEnum::ADMIN->value;
-    const TUTOR     = RoleEnum::TUTOR->value;
     const CLIENT    = RoleEnum::CLIENT->value;
+    const NURSE     = RoleEnum::NURSE->value;
     
     protected $casts = [
         'rating'        => 'integer',

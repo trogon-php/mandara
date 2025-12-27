@@ -49,13 +49,13 @@
         ],
         [
             'type' => 'number',
-            'name' => 'offer_price',
-            'id' => 'offer_price',
-            'label' => 'Offer Price (Optional)',
-            'placeholder' => 'Enter Offer Price',
+            'name' => 'discount_amount',
+            'id' => 'discount_amount',
+            'label' => 'Discount Amount (Optional)',
+            'placeholder' => 'Enter Discount Amount',
             'step' => '0.01',
             'min' => '0',
-            'value' => $edit_data->offer_price,
+            'value' => $edit_data->discount_amount,
             'col' => 6
         ],
         [
@@ -69,6 +69,16 @@
             'col' => 6
         ],
         [
+            'type' => 'number',
+            'name' => 'booking_amount',
+            'id' => 'booking_amount',
+            'label' => 'Booking Amount',
+            'placeholder' => 'Enter Booking Amount',
+            'value' => $edit_data->booking_amount,
+            'min' => '0',
+            'col' => 6
+        ],
+        [
             'type' => 'select',
             'name' => 'status',
             'id' => 'status',
@@ -79,7 +89,16 @@
                 'inactive' => 'Inactive'
             ],
             'value' => $edit_data->status,
-            'col' => 12
-        ]
+            'col' => 6
+        ],
+        [
+            'type' => 'checkbox',
+            'name' => 'tax_included',
+            'id' => 'tax_included',
+            'label' => 'Tax Included..?',
+            'value' => $edit_data->tax_included,
+            'defaultValue' => 0,
+            'col' => 6
+        ],
     ]
 ])

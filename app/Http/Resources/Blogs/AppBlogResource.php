@@ -23,7 +23,6 @@ class AppBlogResource extends BaseResource
             'image_url' => $this->image_url,
             'short_description' => $this->short_description,
             'content' => $this->content,
-            'status' => $this->status ? 'Active' : 'Inactive',
         ];
     }
 }

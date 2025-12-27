@@ -90,28 +90,6 @@ class ReelService extends BaseService
     }
 
     /**
-     * Get course options for filters
-     */
-    public function getCourseOptions(): array
-    {
-        return Course::published()
-            ->sorted()
-            ->pluck('title', 'id')
-            ->toArray();
-    }
-
-    /**
-     * Get category options for filters
-     */
-    public function getCategoryOptions(): array
-    {
-        return Category::active()
-            ->sorted()
-            ->pluck('title', 'id')
-            ->toArray();
-    }
-
-    /**
      * Get app reels for API
      */
     public function getAppReels($limit = 10): array
@@ -161,17 +139,6 @@ class ReelService extends BaseService
             ->get();
     }
 
-    /**
-     * Get reels by course
-     */
-    public function getReelsByCourse(int $courseId)
-    {
-        return $this->model
-            ->byCourse($courseId)
-            ->active()
-            ->sorted()
-            ->get();
-    }
 
     /**
      * Get reels by category
@@ -183,5 +150,16 @@ class ReelService extends BaseService
             ->active()
             ->sorted()
             ->get();
+    }
+
+    public function getPaginatedReelsByCategory(?int $categoryId, int $perPage = 10)
+    {
+        return $this->model
+            ->when($categoryId, function ($query) use ($categoryId) {
+                $query->byCategory($categoryId);
+            })
+            ->active()
+            ->sorted()
+            ->paginate($perPage);
     }
 }

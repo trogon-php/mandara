@@ -33,27 +33,35 @@
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Price:</label>
-                            @if($package->hasOffer())
+
+                            @if($package->hasDiscount())
                                 <p class="text-muted text-decoration-line-through">₹{{ number_format($package->price, 2) }}</p>
+                                <p class="text-success fw-bold mb-0">
+                                    Payable: ₹{{ number_format($package->effective_price, 2) }}
+                                </p>
+                                <p class="text-success mb-0 small">
+                                    Discount: ₹{{ number_format($package->discount_amount, 2) }}
+                                    ({{ number_format($package->discount_percentage, 2) }}% off)
+                                </p>
                             @else
                                 <p class="text-muted">₹{{ number_format($package->price, 2) }}</p>
                             @endif
                         </div>
                     </div>
-                    @if($package->hasOffer())
+
                     <div class="col-md-4">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Offer Price:</label>
-                            <p class="text-success fw-bold">₹{{ number_format($package->offer_price, 2) }}</p>
+                            <label class="form-label fw-semibold">Booking Amount:</label>
+                            <p class="text-muted">₹{{ number_format($package->booking_amount, 2) }}</p>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Discount:</label>
-                            <p class="text-success fw-bold">{{ $package->discount_percentage }}% off</p>
+                            <label class="form-label fw-semibold">Tax Included?</label>
+                            <p class="text-muted">{{ $package->tax_included ? 'Yes (Included)' : 'No (Excluded)' }}</p>
                         </div>
                     </div>
-                    @endif
                 </div>
 
                 <div class="row">
@@ -62,14 +70,6 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Duration:</label>
                             <p class="text-muted">{{ $package->duration_days }} days</p>
-                        </div>
-                    </div>
-                    @endif
-                    @if($package->expire_date)
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Expire Date:</label>
-                            <p class="text-muted">{{ $package->expire_date->format('M d, Y') }}</p>
                         </div>
                     </div>
                     @endif

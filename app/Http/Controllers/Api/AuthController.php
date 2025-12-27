@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\Role;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Services\Auth\AuthService;
 use App\Services\Auth\ClientAuthService;
-use App\Services\Auth\StudentAuthService;
 use App\Services\Users\UserMetaService;
 use Illuminate\Http\Request;
 
 class AuthController extends BaseApiController
 {
     public function __construct(
-        protected ClientAuthService $authService,
+        protected AuthService $authService,
+        protected ClientAuthService $clientAuthService,
         protected UserMetaService $userMetaService
     )
     {}
@@ -45,7 +47,7 @@ class AuthController extends BaseApiController
 
         $data = $request->validate($validationRules);
 
-        $result = $this->authService->register($user->id, $data);
+        $result = $this->clientAuthService->register($user->id, $data);
 
         return $this->serviceResponse($result);
     }
@@ -63,52 +65,6 @@ class AuthController extends BaseApiController
         $result = $this->authService->sendOtp($data);
         return $this->serviceResponse($result, __('messages.otp_sent'));
     }
-    // Update DOB
-    public function updateDob(Request $request)
-    {
-        $user = $this->getAuthUser();
-        if(! $user) {
-            return $this->respondUnauthorized();
-        }
-
-        $data = $request->validate([
-            'date_of_birth' => 'required|date',
-        ]);
-        $result = $this->authService->updateDob($user->id, $data);
-        return $this->serviceResponse($result);
-    }
-    // Update Pregnancy
-    public function updatePregnancy(Request $request)
-    {
-        $user = $this->getAuthUser();
-        if(! $user) {
-            return $this->respondUnauthorized();
-        }
-        $data = $request->validate([
-            'is_pregnant' => 'required|integer|in:0,1',
-            'delivery_date' => 'required_if:is_pregnant,1|date',
-            'have_siblings' => 'required|integer|in:0,1',
-        ]);
-
-        $result = $this->authService->updatePregnancy($user->id, $data);
-
-        return $this->serviceResponse($result);
-    }
-
-    /**
-     * Student Login (OTP request)
-     */
-    // public function login(Request $request)
-    // {
-    //     $data = $request->validate([
-    //         'country_code' => 'required|string|max:5',
-    //         'phone'        => 'required|string|max:20',
-    //     ]);
-
-    //     $result = $this->authService->login($data);
-    //     return $this->serviceResponse($result, __('messages.otp_sent'));
-    // }
-
     /**
      * Verify OTP (API → issue JWT token)
      */
@@ -123,7 +79,49 @@ class AuthController extends BaseApiController
         ]);
 
         $result = $this->authService->verifyOtp($data, true);
+        if($result['status'] == true && $result['data']['user']['role_id'] == Role::CLIENT->value) {
+            // checking any registeration step is pending
+            $nextStep = $this->clientAuthService->getAuthNextStep($result['data']['user']['id']);
+            $result['data']['next_step'] = $nextStep;
+        }
         return $this->serviceResponse($result, __('messages.login_success'));
+    }
+    
+    // Update DOB
+    public function updateDob(Request $request)
+    {
+        $user = $this->getAuthUser();
+        if(! $user) {
+            return $this->respondUnauthorized();
+        }
+
+        $data = $request->validate([
+            'date_of_birth' => 'required|date',
+        ]);
+        $result = $this->clientAuthService->updateDob($user->id, $data);
+        return $this->serviceResponse($result);
+    }
+
+    // Update Pregnancy
+    public function updateJourney(Request $request)
+    {
+        $user = $this->getAuthUser();
+        if(! $user) {
+            return $this->respondUnauthorized();
+        }
+        $data = $request->validate([
+            'preparing_to_conceive' => 'nullable|integer|in:0,1',
+            'last_period_date' => 'required_if:preparing_to_conceive,1|date',
+            'is_pregnant' => 'nullable|integer|in:0,1',
+            'delivery_date' => 'required_if:is_pregnant,1|date',
+            'is_delivered' => 'nullable|integer|in:0,1',
+            'baby_dob' => 'required_if:is_delivered,1|date',
+        ]);
+        // dd($data);
+
+        $result = $this->clientAuthService->updateJourney($user->id, $data);
+
+        return $this->serviceResponse($result);
     }
 
     /**

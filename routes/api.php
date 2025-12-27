@@ -6,35 +6,29 @@ use App\Http\Controllers\Api\ {
     AppVersionController,
     // Authentication API
     AuthController,
+    BabySizeComparisonController,
     BlogApiController,
     // Home page API
     HomeController,
-    SearchController,
-    
-    // Course API
-    CourseController,
-    CourseUnitController,
-    CourseMaterialController,
+    // Device Token API
     DeviceTokenController,
-    VideoLinkController,
-    
+    // Diet Plans API
+    DietPlanApiController,
+
+    // Estore
+    EstoreCartController,
+    EstoreController,
+    EstoreOrderController,
+
     ProfileController,
-    MyCourseController,
-    EnrollmentController,
-    
     // Package API
-    PackageController,
     FeedController,
     GalleryImageController,
     NotificationController,
-    LiveClassApiController,
-    LiveClassController,
     ReelApiController,
-    FeedbackController,
-    WalletController,
-    LeaderboardController,
-    ExamController,
-    ExamAttemptController,
+    MandaraBookingController,
+    MealPackageApiController,
+    MemoryJournalController,
     QaController,
 };
 
@@ -65,7 +59,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('auth')->controller(AuthController::class)->group(function () {
             Route::post('/register', 'register');
             Route::post('/update-dob',    'updateDob');
-            Route::post('/update-pregnancy', 'updatePregnancy');
+            Route::post('/update-journey', 'updateJourney');
         });
         // Device Token API
         Route::prefix('devices')->controller(DeviceTokenController::class)->group(function () {
@@ -120,12 +114,70 @@ Route::prefix('v1')->group(function () {
 
         // Blogs API
         Route::get('/blogs', [BlogApiController::class, 'index']);
+        Route::get('/blogs/{id}', [BlogApiController::class, 'show']);
 
-        // Feedback API
-        Route::prefix('feedback')->controller(FeedbackController::class)->group(function () {
-            Route::get('/', 'index');
+        // Diet Plans API
+        Route::get('/diet-plans', [DietPlanApiController::class, 'index']);
+        Route::get('/diet-plans/{id}', [DietPlanApiController::class, 'show']);
+
+        // Baby Size Comparison API
+        Route::get('/baby-size-comparison/{week}', [BabySizeComparisonController::class, 'getByWeek']);
+
+        // Memory Journals API
+        Route::prefix('memory-journals')->controller(MemoryJournalController::class)->group(function () {
+            Route::get('/my-memories', 'myMemories');
             Route::post('/', 'store');
+            // Route::get('/{id}', 'show');
+            // Route::put('/{id}', 'update');
+            Route::delete('/{id}', 'destroy');
+            Route::get('/date-range', 'getByDateRange');
         });
+
+        // Booking API
+        Route::prefix('mandara/booking')->controller(MandaraBookingController::class)->group(function () {
+            Route::post('/', 'storeMandaraBooking');
+            Route::get('/summary', 'getSummary');
+            Route::post('/additional', 'storeMandaraAdditional');
+            Route::post('/order/create', 'createOrder');
+            Route::post('/order/complete', 'completeOrder');
+        });
+
+        // Meal Packages API
+        Route::prefix('meal-packages')->controller(MealPackageApiController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::post('/', 'storeOrUpdate');
+        });
+
+        // -----------------Estore API ----------------------
+        Route::prefix('estore')->group(function () {
+
+            Route::get('/categories', [EstoreController::class, 'getCategories']);
+
+            Route::prefix('products')->controller(EstoreController::class)->group(function () {
+                Route::get('/', 'getProducts');
+                Route::get('/{id}', 'getProduct');
+            });
+            Route::prefix('cart')->controller(EstoreCartController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/', 'store');
+                // Route::put('/{id}', 'update');
+                Route::delete('/{id}', 'destroy');
+                Route::delete('/', 'clear');
+                Route::get('/total', 'total');
+                Route::get('/checkout', 'checkout');
+            });
+            // Orders
+            Route::prefix('orders')->controller(EstoreOrderController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/create', 'store');
+                Route::post('/complete', 'completeOrder');
+            });
+        });
+        // Feedback API
+        // Route::prefix('feedback')->controller(FeedbackController::class)->group(function () {
+        //     Route::get('/', 'index');
+        //     Route::post('/', 'store');
+        // });
 
     });
 });

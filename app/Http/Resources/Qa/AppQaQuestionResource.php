@@ -21,6 +21,7 @@ class AppQaQuestionResource extends BaseResource
             'answers_count' => $this->answers->count(),
             'vote_type' => $this->getVoteType(),
             'first_answer' => $this->getFirstAnswer(),
+            'since' => $this->created_at->diffForHumans(),
         ];
     }
     protected function getFirstAnswer()

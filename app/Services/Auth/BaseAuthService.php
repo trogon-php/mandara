@@ -27,6 +27,28 @@ class BaseAuthService
         $this->loginAttempts = $loginAttempts;
     }
 
+    public function sendOtp(array $data, array $allowedRoles = []): array
+    {
+        if($data['type'] == 'phone') {
+            $user = $this->users->findByPhone($data['phone'], $data['country_code']);
+        } else {
+            $user = $this->users->findByEmail($data['email']);
+        }
+        // dd($user);
+        if(! $user) {
+            // register user as client
+            $data['role_id'] = Role::CLIENT->value;
+            $user = $this->users->storeWithMeta($data);
+
+            if($user) {
+
+                return $this->loginWithOtp($data, [Role::CLIENT->value]);
+            }
+            return ['status' => false, 'message' => __('messages.user_registration_failed'), 'http_code' => Response::HTTP_INTERNAL_SERVER_ERROR];
+        }
+        return $this->loginWithOtp($data, $allowedRoles);
+
+    }
     /**
      * Common OTP login flow
      */
@@ -134,10 +156,13 @@ class BaseAuthService
 
             $user = (new AppUserProfileResource($user))->toArray(request());
             
-            return ['status' => true, 'data' => [
-                'token' => $token, 
-                'user' => $user
-            ]];
+            return [
+                'status' => true,
+                'data' => [
+                    'token' => $token, 
+                    'user' => $user
+                    ]
+            ];
         }
 
         Auth::login($user);

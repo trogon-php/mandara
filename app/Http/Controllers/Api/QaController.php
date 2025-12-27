@@ -43,6 +43,7 @@ class QaController extends BaseApiController
         $categoryId = $request->get('category_id');
 
         $questions = $this->questionService->getQuestionsPaginated($perPage, $categoryId);
+        
         $questions = AppQaQuestionResource::collection($questions);
 
         return $this->respondPaginated($questions, 'Questions retrieved successfully');
@@ -108,7 +109,7 @@ class QaController extends BaseApiController
         $result = $this->questionService->deleteUserQuestion($id, $user->id);
 
         if (!$result) {
-            return $this->respondError('Question not found or you do not have permission to delete it', [], 404);
+            return $this->respondError('Question not found or you do not have permission to delete it', 404);
         }
 
         return $this->respondSuccess([], 'Question deleted successfully');
@@ -163,7 +164,7 @@ class QaController extends BaseApiController
         $result = $this->answerService->deleteUserAnswer($id, $user->id);
 
         if (!$result) {
-            return $this->respondError('Answer not found or you do not have permission to delete it', [], 404);
+            return $this->respondError('Answer not found or you do not have permission to delete it', 404);
         }
 
         return $this->respondSuccess([], 'Answer deleted successfully');
@@ -186,7 +187,7 @@ class QaController extends BaseApiController
         $result = $this->voteService->storeOrUpdateVote($id, $user->id, $data['vote_type']);
 
         if (!$result['success']) {
-            return $this->respondError($result['message'], [], 400);
+            return $this->respondError($result['message'], 400);
         }
 
         return $this->respondSuccess($result, $result['message']);

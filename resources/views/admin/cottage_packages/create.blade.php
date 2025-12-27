@@ -53,10 +53,10 @@
         ],
         [
             'type' => 'number',
-            'name' => 'offer_price',
-            'id' => 'offer_price',
-            'label' => 'Offer Price (Optional)',
-            'placeholder' => 'Enter Offer Price',
+            'name' => 'discount_amount',
+            'id' => 'discount_amount',
+            'label' => 'Discount Amount (Optional)',
+            'placeholder' => 'Enter Discount Amount',
             'step' => '0.01',
             'min' => '0',
             'col' => 6
@@ -71,6 +71,15 @@
             'col' => 6
         ],
         [
+            'type' => 'number',
+            'name' => 'booking_amount',
+            'id' => 'booking_amount',
+            'label' => 'Booking Amount',
+            'placeholder' => 'Enter Booking Amount',
+            'min' => '0',
+            'col' => 6
+        ],
+        [
             'type' => 'select',
             'name' => 'status',
             'id' => 'status',
@@ -80,7 +89,15 @@
                 'active' => 'Active',
                 'inactive' => 'Inactive'
             ],
-            'col' => 12
-        ]
+            'col' => 6
+        ],
+        [
+            'type' => 'checkbox',
+            'name' => 'tax_included',
+            'id' => 'tax_included',
+            'label' => 'Tax Included..?',
+            'defaultValue' => 0,
+            'col' => 6
+        ],
     ]
 ])

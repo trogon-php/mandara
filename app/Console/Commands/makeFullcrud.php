@@ -40,14 +40,14 @@ class makeFullcrud extends Command
         $this->createFile(app_path("Services/{$plural}/{$name}Service.php"), $this->getServiceStub($name));
         $this->info("Service created: Services/{$plural}/{$name}Service.php");
 
-        // 3. Create Controller
-        $this->createFile(app_path("Http/Controllers/Admin/{$name}Controller.php"), $this->getControllerStub($name, $plural, $snakePlural));
-        $this->info("Controller created: Http/Controllers/Admin/{$name}Controller.php");
+        // // 3. Create Controller
+        // $this->createFile(app_path("Http/Controllers/Admin/{$name}Controller.php"), $this->getControllerStub($name, $plural, $snakePlural));
+        // $this->info("Controller created: Http/Controllers/Admin/{$name}Controller.php");
 
-        // 4. Create Requests
-        $this->createFile(app_path("Http/Requests/{$plural}/Store{$name}Request.php"), $this->getRequestStub($name, 'Store', $plural));
-        $this->createFile(app_path("Http/Requests/{$plural}/Update{$name}Request.php"), $this->getRequestStub($name, 'Update', $plural));
-        $this->info("Requests created: Store{$name}Request, Update{$name}Request");
+        // // 4. Create Requests
+        // $this->createFile(app_path("Http/Requests/{$plural}/Store{$name}Request.php"), $this->getRequestStub($name, 'Store', $plural));
+        // $this->createFile(app_path("Http/Requests/{$plural}/Update{$name}Request.php"), $this->getRequestStub($name, 'Update', $plural));
+        // $this->info("Requests created: Store{$name}Request, Update{$name}Request");
 
         // 5. Create Views
         // $viewsPath = resource_path("views/admin/{$snakePlural}");

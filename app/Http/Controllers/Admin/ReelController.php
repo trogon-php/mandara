@@ -7,10 +7,6 @@ use App\Http\Controllers\Admin\AdminBaseController;
 use App\Services\Reels\ReelService;
 use App\Http\Requests\Reels\StoreReelRequest as StoreRequest;
 use App\Http\Requests\Reels\UpdateReelRequest as UpdateRequest;
-use App\Models\Reel;
-use App\Models\ReelCategory;
-use App\Models\Course;
-use App\Models\Category;
 
 class ReelController extends AdminBaseController
 {
@@ -56,13 +52,9 @@ class ReelController extends AdminBaseController
     public function create()
     {
         $reelCategories = $this->service->getReelCategoryOptions();
-        $courses = $this->service->getCourseOptions();
-        $categories = $this->service->getCategoryOptions();
         
         return view('admin.reels.create', [
             'reelCategories' => $reelCategories,
-            'courses' => $courses,
-            'categories' => $categories,
         ]);
     }
 
@@ -76,14 +68,10 @@ class ReelController extends AdminBaseController
     {
         $edit_data = $this->service->find($id);
         $reelCategories = $this->service->getReelCategoryOptions();
-        $courses = $this->service->getCourseOptions();
-        $categories = $this->service->getCategoryOptions();
 
         return view('admin.reels.edit', [
             'edit_data' => $edit_data,
             'reelCategories' => $reelCategories,
-            'courses' => $courses,
-            'categories' => $categories,
         ]);
     }
 

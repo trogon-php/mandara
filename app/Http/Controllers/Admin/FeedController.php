@@ -51,10 +51,7 @@ class FeedController extends AdminBaseController
     // Show add form (AJAX modal)
     public function create()
     {
-        // Get only parent categories (where parent_id is null) and active ones
-        $categories = $this->service->getFilteredData([
-            'filters' => ['feed_category_id' => null, 'status' => 'active']
-        ]);
+        $categories = $this->service->getCategoryOptions();
         
         return view('admin.feeds.create', [
             'categories' => $categories,
@@ -73,9 +70,7 @@ class FeedController extends AdminBaseController
     {
         $edit_data = $this->service->find($id);
 
-        $categories = $this->service->getFilteredData([
-            'filters' => ['feed_category_id' => null, 'status' => 'active']
-        ]);
+        $categories = $this->service->getCategoryOptions();
 
         return view('admin.feeds.edit', [
             'edit_data' => $edit_data,

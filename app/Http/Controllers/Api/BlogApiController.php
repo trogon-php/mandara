@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Services\Blogs\BlogService;
 use App\Http\Resources\Blogs\AppBlogResource;
+use App\Http\Resources\Blogs\AppBlogsListResource;
 use Illuminate\Http\Request;
 
 class BlogApiController extends BaseApiController
 {
-    protected BlogService $blogService;
 
-    public function __construct(BlogService $blogService)
+    public function __construct(private BlogService $blogService)
     {
-        $this->blogService = $blogService;
+        parent::__construct();
     }
 
     /**
@@ -24,8 +24,20 @@ class BlogApiController extends BaseApiController
         $perPage = $request->get('per_page', 10);
         $blogs = $this->blogService->getActiveBlogsPaginated($perPage);
         
-        $blogs = AppBlogResource::collection($blogs);
+        $blogs = AppBlogsListResource::collection($blogs);
 
         return $this->respondPaginated($blogs, 'Blogs retrieved successfully');
+    }
+
+    public function show(Request $request, $id)
+    {
+        // dd($id);
+        $blog = $this->blogService->find($id);
+        if (!$blog) {
+            return $this->respondError('Blog not found', 404);
+        }
+        $blog = AppBlogResource::make($blog);
+
+        return $this->respondSuccess($blog, 'Blog retrieved successfully');
     }
 }

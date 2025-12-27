@@ -74,8 +74,8 @@ class RoleService extends BaseService
     {
         return $this->model->whereIn('id', [
             Role::ADMIN,
-            Role::TUTOR,
-            Role::STUDENT
+            Role::NURSE,
+            Role::CLIENT
         ])->sorted()->get();
     }
 
@@ -83,8 +83,8 @@ class RoleService extends BaseService
     {
         return $this->model->whereNotIn('id', [
             Role::ADMIN,
-            Role::TUTOR,
-            Role::STUDENT
+            Role::NURSE,
+            Role::CLIENT
         ])->sorted()->get();
     }
 
@@ -98,8 +98,8 @@ class RoleService extends BaseService
     {
         $roles = $this->model->whereIn('id', [
             Role::ADMIN,
-            Role::TUTOR,
-            Role::STUDENT
+            Role::NURSE,
+            Role::CLIENT
         ])->where('status', 1)->sorted()->get();
         return (new AppRoleCollection($roles))->toArray(request());
     }
@@ -108,8 +108,8 @@ class RoleService extends BaseService
     {
         $roles = $this->model->whereNotIn('id', [
             Role::ADMIN,
-            Role::TUTOR,
-            Role::STUDENT
+            Role::NURSE,
+            Role::CLIENT
         ])->where('status', 1)->sorted()->get();
         return (new AppRoleCollection($roles))->toArray(request());
     }

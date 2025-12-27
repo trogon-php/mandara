@@ -34,16 +34,6 @@ class Reel extends BaseModel
         return $this->belongsTo(ReelCategory::class);
     }
 
-    // public function course()
-    // {
-    //     return $this->belongsTo(Course::class);
-    // }
-
-    // public function category()
-    // {
-    //     return $this->belongsTo(Category::class);
-    // }
-
     /**
      * Query scopes
      */
@@ -57,18 +47,9 @@ class Reel extends BaseModel
         return $query->where('premium', false);
     }
 
-    public function scopeByReelCategory($query, $categoryId)
+    public function scopeByCategory($query, $categoryId)
     {
         return $query->where('reel_category_id', $categoryId);
     }
 
-    public function scopeByCourse($query, $courseId)
-    {
-        return $query->where('course_id', $courseId);
-    }
-
-    public function scopeByCategory($query, $categoryId)
-    {
-        return $query->where('category_id', $categoryId);
-    }
 }

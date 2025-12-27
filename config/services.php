@@ -39,5 +39,9 @@ return [
     'vimeo' => [
         'access_token' => env('VIMEO_ACCESS_TOKEN'),
     ],
+    'razorpay' => [
+        'key_id' => env('RAZORPAY_KEY_ID'),
+        'key_secret' => env('RAZORPAY_KEY_SECRET'),
+    ],
 
 ];

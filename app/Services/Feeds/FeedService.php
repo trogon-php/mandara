@@ -84,7 +84,7 @@ class FeedService extends BaseService
     /**
      * Get category options for filter dropdown
      */
-    private function getCategoryOptions(): array
+    public function getCategoryOptions(): array
     {
         $categories = FeedCategory::where('status', 1)->orderBy('title')->get();
         $options = ['' => 'All Categories'];
@@ -125,27 +125,9 @@ class FeedService extends BaseService
             ->get();
     }
 
-    public function getFeedsByCourse(int $courseId)
-    {
-        return $this->model->where('course_id', $courseId)
-            ->where('status', 1)
-            ->sorted()
-            ->get();
-    }
-
     public function getFeedsWithCategory()
     {
         return $this->model->with('feedCategory')->sorted()->get();
-    }
-
-    public function getFeedsWithCourse()
-    {
-        return $this->model->with('course')->sorted()->get();
-    }
-
-    public function getFeedsWithRelations()
-    {
-        return $this->model->with(['feedCategory', 'course'])->sorted()->get();
     }
 
     public function getAppFeeds(): array
@@ -274,11 +256,6 @@ class FeedService extends BaseService
         return $this->model->where('feed_category_id', $categoryId)->count();
     }
 
-    public function getFeedsByCourseCount(int $courseId): int
-    {
-        return $this->model->where('course_id', $courseId)->count();
-    }
-
     public function getFeedsWithFileCount()
     {
         return $this->model->where('status', 1)
@@ -340,5 +317,15 @@ class FeedService extends BaseService
             'with_files' => $this->getFeedsWithFileCount(),
             'empty' => $this->getEmptyFeeds()->count(),
         ];
+    }
+    public function getPaginatedFeedsByCategory(?int $categoryId, int $perPage = 10)
+    {
+        return $this->model
+            ->when($categoryId, function ($query) use ($categoryId) {
+                $query->byCategory($categoryId);
+            })
+            ->active()
+            ->sorted()
+            ->paginate($perPage);
     }
 }

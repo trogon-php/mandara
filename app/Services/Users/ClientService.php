@@ -41,7 +41,7 @@ class ClientService extends BaseService
     {
         return [
             'status' => [
-                'type' => 'select',
+                'type' => 'exact',
                 'label' => 'Status',
                 'col' => 3,
                 'options' => [
@@ -214,5 +214,24 @@ class ClientService extends BaseService
         return $query->select('id', 'name', 'phone', 'country_code')
             ->orderBy('name')
             ->paginate($perPage, ['*'], 'page', $page);
+    }
+    public function getJourneyStatus(int $userId): string
+    {
+        $user = $this->find($userId,['userMeta']);
+        
+        $isPreparing = $user->getMetaField('preparing_to_conceive');
+        $isPregnant = $user->getMetaField('is_pregnant');
+        $isDelivered = $user->getMetaField('is_delivered');
+
+        if($isPreparing && $isPreparing == 1) {
+            return 'preparing';
+        }
+        if($isPregnant && $isPregnant == 1) {
+            return 'pregnant';
+        }
+        if($isDelivered && $isDelivered == 1) {
+            return 'delivered';
+        }
+        return 'not determined';
     }
 }

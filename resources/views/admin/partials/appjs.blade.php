@@ -397,6 +397,8 @@
         });
     }
 
+   
+
     document.addEventListener("DOMContentLoaded", function () {
         const images = document.querySelectorAll("img[data-src]");
         const observer = new IntersectionObserver(entries => {

@@ -19,6 +19,7 @@
             'name' => 'reel_category_id',
             'id' => 'reel_category_id',
             'label' => 'Reel Category',
+            'required' => true,
             'options' => $reelCategories ?? [],
             'col' => 6
         ],

@@ -9,7 +9,9 @@ class CottagePackage extends BaseModel
 
     protected $casts = [
         'price' => 'decimal:2',
-        'offer_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'booking_amount' => 'decimal:2',
+        'tax_included' => 'boolean',
         'duration_days' => 'integer',
         'sort_order' => 'integer',
     ];
@@ -19,7 +21,9 @@ class CottagePackage extends BaseModel
         'description',
         'cottage_category_id',
         'price',
-        'offer_price',
+        'discount_amount',
+        'booking_amount',
+        'tax_included',
         'duration_days',
         'status',
     ];
@@ -29,9 +33,30 @@ class CottagePackage extends BaseModel
         return $this->belongsTo(CottageCategory::class);
     }
 
-    public function hasOffer(): bool
+    public function hasDiscount(): bool
     {
-        return !is_null($this->offer_price);
+        return !is_null($this->discount_amount) && (float) $this->discount_amount > 0;
+    }
+
+    /**
+     * Effective (payable) base price before tax
+     */
+    public function getEffectivePriceAttribute(): float
+    {
+        $discount = $this->discount_amount ?? 0;
+        return max(0, (float) $this->price - (float) $discount);
+    }
+
+    /**
+     * Discount percentage (if any)
+     */
+    public function getDiscountPercentageAttribute(): ?float
+    {
+        if (!$this->hasDiscount() || (float) $this->price <= 0) {
+            return null;
+        }
+
+        return round(((float) $this->discount_amount / (float) $this->price) * 100, 2);
     }
 
 }

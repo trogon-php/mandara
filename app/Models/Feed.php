@@ -36,8 +36,9 @@ class Feed extends BaseModel
         return $this->belongsTo(FeedCategory::class, 'feed_category_id');
     }
 
-    public function course()
+    public function scopeByCategory($query, $categoryId)
     {
-        return $this->belongsTo(Course::class, 'course_id');
+        return $query->where('feed_category_id', $categoryId);
     }
+
 }

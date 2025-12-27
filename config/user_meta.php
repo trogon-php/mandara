@@ -18,18 +18,6 @@ return [
     | - relation   : FK relation to another table/model
     */
 
-    'designation' => [
-        'type'     => 'select',
-        'options'  => [
-            'MBBS' => 'MBBS',
-            'MD' => 'MD', 
-            'PGDM' => 'PGDM',
-            'Other' => 'Other'
-        ],
-        'required' => false,
-        'enabled'  => false,
-    ],
-
     'country_id' => [
         'type'     => 'relation',
         'model'    => \App\Models\Country::class,
@@ -63,10 +51,55 @@ return [
         'enabled'  => true,
     ],
 
-    'have_siblings' => [
+    'is_delivered' => [
         'type'     => 'integer',
         'required' => false,
         'enabled'  => true,
-    ]
+    ],
 
+    'blood_group' => [
+        'type'     => 'text',
+        'required' => false,
+        'enabled'  => true,
+    ],
+
+    'is_veg' => [
+        'type'     => 'integer',
+        'required' => false,
+        'enabled'  => true,
+    ],
+
+    'diet_remarks' => [
+        'type'     => 'textarea',
+        'required' => false,
+        'enabled'  => true,
+    ],
+
+    'husband_name' => [
+        'type'     => 'text',
+        'required' => false,
+        'enabled'  => true,
+    ],
+    'preparing_to_conceive' => [
+        'type'     => 'integer',
+        'required' => false,
+        'enabled'  => true,
+    ],
+    'last_period_date' => [
+        'type'     => 'date',
+        'required' => false,
+        'enabled'  => true,
+    ],
+    'baby_dob' => [
+        'type'     => 'date',
+        'required' => false,
+        'enabled'  => true,
+    ],
+
+    'meal_package_id' => [
+        'type'     => 'relation',
+        'model'    => \App\Models\MealPackage::class,
+        'required' => false,
+        'enabled'  => true,
+    ],
 ];

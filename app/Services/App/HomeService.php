@@ -7,11 +7,10 @@ use App\Services\App\AppBaseService;
 use App\Services\Banners\BannerService;
 use App\Services\Feeds\FeedService;
 use App\Services\Testimonials\TestimonialService;
-use App\Services\Courses\CourseService;
-use App\Services\Categories\CategoryService;
 use App\Services\Reels\ReelService;
 use App\Services\Galleries\GalleryImageService;
 use App\Services\Notifications\NotificationService;
+use App\Services\Users\ClientService;
 
 class HomeService extends AppBaseService
 {
@@ -22,20 +21,21 @@ class HomeService extends AppBaseService
         protected BannerService $banners,
         protected FeedService $feeds,
         protected TestimonialService $testimonials,
-        protected CategoryService $categories,
         protected ReelService $reels,
         protected GalleryImageService $galleryImages,
         protected NotificationService $notifications,
         protected PregnancyService $pregnancyService,
+        protected ClientService $clientService,
     ) {}
 
     public function getHomeData(): array
     {
-        $user = authUser();
+        $user = $this->getAuthUser();
 
         $sharedContent = $this->getSharedContent();
-        $userSpecificContent = $this->getUserSpecificContent($user);
-        $content = array_merge($sharedContent, $userSpecificContent);
+        $userSpecificContent = $this->getUserJourneyContent($user);
+        $homeTools = $this->getHomeTools();
+        $content = array_merge($sharedContent, $userSpecificContent, $homeTools);
 
         return $this->payload($content, 'Home dashboard fetched successfully');
     }
@@ -55,18 +55,31 @@ class HomeService extends AppBaseService
     /**
      * Get user specific content for the home page
      */
-    private function getUserSpecificContent($user)
+    private function getUserJourneyContent($user)
     {
         
         return $this->remember("user:{$user->id}", function () use ($user) {
-            
-            // Add pregnancy progress after banners
-            $pregnancyProgress = $this->pregnancyService->getPregnancyProgress($user->id);
-            if ($pregnancyProgress) {
-                $content['pregnancy_progress'] = $pregnancyProgress;
+            $content = [];
+
+            if($user->getMetaField('preparing_to_conceive') == 1) {
+                $content['journey_cycle'] = $this->pregnancyService->calculatePeriodCycle($user->getMetaField('last_period_date'));
             }
+            if($user->getMetaField('is_pregnant') == 1) {
+                $content['journey_cycle'] = $this->pregnancyService->getPregnancyProgress();
+            }
+            if($user->getMetaField('is_delivered') == 1) {
+                $content['journey_cycle'] = $this->pregnancyService->postpartumTimeline($user->getMetaField('baby_dob'));
+            }
+            $content['journey_cycle']['journey_type'] = $this->clientService->getJourneyStatus($user->id);
             
             return $content;
         });
+    }
+
+    private function getHomeTools(): array
+    {
+        return [
+            'tools' => config('home_tools'),
+        ];
     }
 }

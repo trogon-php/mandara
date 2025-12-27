@@ -19,9 +19,10 @@
                         </div>
                         <small class="text-muted"></small>
                     </div>
-                    
+                   
                     <!-- Show submit button in search row only when no filters exist -->
                     @if(count($filterConfig) == 0)
+                    
                     <div class="col-md-4">
                         <div class="d-flex flex-row gap-2 align-items-end" style="height: 100%;border-radius: 0!important;">
                             <button type="submit" class="btn btn-primary" style="width: 130px;border-radius: 5px!important;">

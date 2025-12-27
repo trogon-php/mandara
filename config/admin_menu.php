@@ -10,26 +10,31 @@ return [
         'can'   => 'dashboard/index',
     ],
 
-    // Student Management
+    // Users Management
     [
-        'title'     => 'Student / Tutor',
+        'title'     => 'User Management',
         'is_header' => true,
     ],
     [
-        'title'    => 'Student Management',
+        'title'    => 'User Management',
         'icon'     => 'ri-user-line',
-        'can'      => 'students/index',
+        'can'      => 'clients/index',
         'children' => [
-            ['title' => 'Students',    'route' => 'admin/students',    'can' => 'students/index'],
-            ['title' => 'Enrollments', 'route' => 'admin/enrollments', 'can' => 'enrollments/index'],
-            ['title' => 'Batches',     'route' => 'admin/batches',     'can' => 'batches/index', 'feature' => 'batches'],
+            ['title' => 'Clients',    'route' => 'admin/clients',    'can' => 'clients/index'],
+            ['title' => 'Guests', 'route' => 'admin/guests', 'can' => 'guests/index'],
         ],
     ],
     [
-        'title' => 'Tutors',
-        'icon'  => 'ri-user-star-line',
-        'route' => 'admin/tutors',
-        'can'   => 'tutors/index',
+        'title' => 'Nurses',
+        'icon'  => 'ri-nurse-line',
+        'route' => 'admin/nurses',
+        'can'   => 'nurses/index',
+    ],
+    [
+        'title' => 'Doctors',
+        'icon'  => 'ri-hospital-line',    
+        'route' => 'admin/doctors',
+        'can'   => 'doctors/index',
     ],
     // Cottage Management
     [
@@ -49,59 +54,29 @@ return [
         'can'   => 'cottage-categories/index',
     ],
 
-    // Course Management
-    [
-        'title'     => 'Course Management',
-        'is_header' => true,
-    ],
-    [
-        'title'    => 'Courses',
-        'icon'     => 'ri-book-line',
-        'can'      => 'courses/index',
-        'children' => [
-            ['title' => 'All Courses',       'route' => 'admin/courses',         'can' => 'courses/index'],
-            ['title' => 'Course Categories', 'route' => 'admin/categories',      'can' => 'categories/index'],
-            ['title' => 'Course Programs',   'route' => 'admin/programs',        'can' => 'programs/index'],
-            ['title' => 'Course Tutors',     'route' => 'admin/course-tutors',   'can' => 'course-tutors/index'],
-            ['title' => 'Course Reviews',    'route' => 'admin/course-reviews',  'can' => 'course-reviews/index'],
-            ['title' => 'Course Features',   'route' => 'admin/course-features', 'can' => 'course-features/index'],
-        ],
-    ],
 
-    // Live Classes
+    // Estore Management
     [
-        'title'     => 'Live Classes',
+        'title'     => 'Estore Management',
         'is_header' => true,
     ],
     [
-        'title' => 'Live Classes',
-        'icon'  => 'ri-live-line',
-        'route' => 'admin/live-classes',
-        'can'   => 'live-classes/index',
-    ],
-
-    // Exam & Questions
-    [
-        'title'     => 'Exam & Questions',
-        'is_header' => true,
+        'title' => 'Estore Products',
+        'icon'  => 'ri-shopping-bag-line',
+        'route' => 'admin/estore-products',
+        'can'   => 'estore-products/index',
     ],
     [
-        'title' => 'Question Banks',
+        'title' => 'Estore Categories',
         'icon'  => 'ri-folder-line',
-        'route' => 'admin/question-banks',
-        'can'   => 'question-banks/index',
+        'route' => 'admin/estore-categories',
+        'can'   => 'estore-categories/index',
     ],
     [
-        'title' => 'Questions',
-        'icon'  => 'ri-question-line',
-        'route' => 'admin/questions',
-        'can'   => 'questions/index',
-    ],
-    [
-        'title' => 'Exams',
-        'icon'  => 'ri-clipboard-line',
-        'route' => 'admin/exams',
-        'can'   => 'exams/index',
+        'title' => 'Estore Orders',
+        'icon'  => 'ri-shopping-cart-line',
+        'route' => 'admin/estore-orders',
+        'can'   => 'estore-orders/index',
     ],
 
     // Content & Marketing
@@ -123,12 +98,6 @@ return [
             ['title' => 'Gallery Albums', 'route' => 'admin/gallery-albums', 'can' => 'gallery-albums/index'],
             ['title' => 'Gallery Images', 'route' => 'admin/gallery-images', 'can' => 'gallery-images/index'],
         ],
-    ],
-    [
-        'title' => 'Demo Videos',
-        'icon'  => 'ri-video-line',
-        'route' => 'admin/demo-videos',
-        'can'   => 'demo_videos/index',
     ],
     [
         'title' => 'Notifications',
@@ -160,17 +129,15 @@ return [
             ['title' => 'Reel Categories', 'route' => 'admin/reel-categories', 'can' => 'reel-categories/index'],
         ],
     ],
-    // [
-    //     'title' => 'Reviews',
-    //     'icon'  => 'ri-star-line',
-    //     'route' => 'admin/reviews',
-    //     'can'   => 'reviews/index',
-    // ],
     [
-        'title' => 'Testimonials',
-        'icon'  => 'ri-quote-text',
-        'route' => 'admin/testimonials',
-        'can'   => 'testimonials/index',
+        'title'     => 'PUBLIC TOOLS',
+        'is_header' => true,
+    ],
+    [
+        'title' => 'Diet Plans',
+        'icon'  => 'ri-restaurant-line',
+        'route' => 'admin/diet-plans',
+        'can'   => 'diet-plans/index',
     ],
 
     // Payments & Packages
@@ -185,6 +152,12 @@ return [
         'can'   => 'cottage-packages/index',
     ],
     [
+        'title' => 'Meal Packages',
+        'icon'  => 'ri-restaurant-line',
+        'route' => 'admin/meal-packages',
+        'can'   => 'meal-packages/index',
+    ],
+    [
         'title' => 'Orders',
         'icon'  => 'ri-shopping-cart-line',
         'route' => 'admin/orders',
@@ -194,6 +167,25 @@ return [
         'icon'  => 'ri-money-dollar-circle-line',
         'route' => 'admin/payments',
     ],
+
+    // FrontOffice Management
+    [
+        'title'     => 'FrontOffice Management',
+        'is_header' => true,
+    ],
+    [
+        'title' => 'Mandara Bookings',
+        'icon'  => 'ri-calendar-line',
+        'route' => 'admin/mandara-bookings',
+        'can'   => 'mandara-bookings/index',
+    ],
+    [
+        'title' => 'Mandara Payments',
+        'icon'  => 'ri-money-dollar-circle-line',
+        'route' => 'admin/mandara-payments',
+        'can'   => 'mandara-payments/index',
+    ],
+   
 
     // Reports
     [

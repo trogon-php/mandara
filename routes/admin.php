@@ -5,42 +5,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 
 use App\Http\Controllers\Admin\{
-    AssignmentController,
     // Dashboard
     DashboardController,
 
     // User & Roles
     RoleController,
-    TutorController,
-    StudentController,
-    CourseTutorController,
-    EnrollmentController,
     LoginAttemptController,
-
-    // Reviews & Testimonials 
-    ReviewController,
-    TestimonialController,
-    CourseReviewController,
 
     //  Feeds 
     FeedCategoryController,
     FeedController,
-
-    //  Categories & Programs 
-    CategoryController,
-    ProgramController,
-
-    //  Courses & Units 
-    CourseController,
-    CourseUnitController,
-    CourseContentController,
-    CourseMaterialController,
-    CourseFeatureController,
-
-    //  Packages 
-    PackageController,
-    PackageItemController,
-    PackageFeatureController,
 
     //  Coupons
     CouponController,
@@ -61,41 +35,26 @@ use App\Http\Controllers\Admin\{
     ReelController,
     GalleryAlbumController,
     GalleryImageController,
-    DemoVideoController,
-    DocumentController,
     //  Notifications 
     NotificationController,
 
-    //  Live Classes 
-    LiveClassAccountController,
-    LiveClassController,
-    LiveClassIntegrationController,
-    LiveClassSessionController,
-    //  Videos & Notes
-    VideoController,
-    NoteController,
-
     //  Feedback
     FeedbackController,
-    StudentTestController,
-
-    //  Questions & Exams
-    QuestionController,
-    QuestionParagraphController,
-    QuestionBankController,
-    ExamController,
 
     //  Integrations
     ClientCredentialController,
     CottageCategoryController,
     CottageController,
     CottagePackageController,
-    HomeworkController,
+    DietPlanController,
+    MealPackageController,
     MediaController,
-    QuizController,
-
+    EstoreCategoryController,
+    EstoreProductController,
+    MandaraBookingController,
     //  Reports
     ReferralReportController,
+    SlugController,
     TopReferrersController
 };
 
@@ -134,25 +93,6 @@ Route::middleware(['web','auth:admin'])
 
         Route::resource('reels', ReelController::class);
         
-        // Reviews routes
-        Route::prefix('reviews')->name('reviews.')->controller(ReviewController::class)->group(function () {
-            Route::get('sort', 'sortView')->name('sort.view');
-            Route::post('sort', 'sortUpdate')->name('sort.update');
-            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
-            Route::post('/{review}/clone', 'cloneItem')->name('clone');
-        });
-
-        Route::resource('reviews', ReviewController::class);
-
-        // testimonials route
-        Route::prefix('testimonials')->name('testimonials.')->controller(TestimonialController::class)->group(function () {
-            Route::get('sort', 'sortView')->name('sort.view');
-            Route::post('sort', 'sortUpdate')->name('sort.update');
-            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
-            Route::post('/{testimonial}/clone', 'cloneItem')->name('clone');
-        });
-        Route::resource('testimonials', TestimonialController::class);
-
         // Feed Categories routes
         Route::prefix('feed-categories')->name('feed-categories.')->controller(FeedCategoryController::class)->group(function () {
             Route::get('sort', 'sortView')->name('sort.view');
@@ -224,15 +164,6 @@ Route::middleware(['web','auth:admin'])
         });
         Route::resource('clients', ClientController::class);
 
-        // Packages routes
-        // Route::prefix('packages')->name('packages.')->controller(PackageController::class)->group(function () {
-        //     Route::get('sort', 'sortView')->name('sort.view');
-        //     Route::post('sort', 'sortUpdate')->name('sort.update');
-        //     Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
-        //     Route::post('/{package}/clone', 'cloneItem')->name('clone');
-        // });
-        // Route::resource('packages', PackageController::class);
-
         // Cottage Packages routes
         Route::prefix('cottage-packages')->name('cottage-packages.')->controller(CottagePackageController::class)->group(function () {
             Route::get('sort', 'sortView')->name('sort.view');
@@ -242,6 +173,16 @@ Route::middleware(['web','auth:admin'])
         });
         Route::resource('cottage-packages', CottagePackageController::class);
 
+        // Meal Packages routes
+        Route::prefix('meal-packages')->name('meal-packages.')->controller(MealPackageController::class)->group(function () {
+            Route::get('sort', 'sortView')->name('sort.view');
+            Route::post('sort', 'sortUpdate')->name('sort.update');
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+            Route::post('/{meal-package}/clone', 'cloneItem')->name('clone');
+        });
+
+        Route::resource('meal-packages', MealPackageController::class);
+        
         // Coupons routes
         Route::prefix('coupons')->name('coupons.')->controller(CouponController::class)->group(function () {
             Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
@@ -296,25 +237,6 @@ Route::middleware(['web','auth:admin'])
             Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
         });
         Route::resource('payments', PaymentController::class);
-        
-
-        // Package Items routes
-        // Route::prefix('package-items')->name('package-items.')->controller(PackageItemController::class)->group(function () {
-        //     Route::get('sort', 'sortView')->name('sort.view');
-        //     Route::post('sort', 'sortUpdate')->name('sort.update');
-        //     Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
-        //     Route::post('/{package-item}/clone', 'cloneItem')->name('clone');
-        // });
-        // Route::resource('package-items', PackageItemController::class);
-
-        // Package Features routes
-        Route::prefix('package-features')->name('package-features.')->controller(PackageFeatureController::class)->group(function () {
-            Route::get('sort', 'sortView')->name('sort.view');
-            Route::post('sort', 'sortUpdate')->name('sort.update');
-            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
-            Route::post('/{package-feature}/clone', 'cloneItem')->name('clone');
-        });
-        Route::resource('package-features', PackageFeatureController::class);
 
         // Login Attempts routes
         Route::prefix('login-attempts')->name('login-attempts.')->controller(LoginAttemptController::class)->group(function () {
@@ -347,6 +269,56 @@ Route::middleware(['web','auth:admin'])
             Route::post('/{blog}/clone', 'cloneItem')->name('clone');
         });
         Route::resource('blogs', BlogController::class);
+
+        // Estore Categories routes
+        Route::prefix('estore-categories')->name('estore_categories.')->controller(EstoreCategoryController::class)->group(function () {
+            Route::get('sort', 'sortView')->name('sort.view');
+            Route::post('sort', 'sortUpdate')->name('sort.update');
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+            Route::post('/{estoreCategory}/clone', 'cloneItem')->name('clone');
+        });
+
+        // Estore Products routes
+        Route::prefix('estore-products')->name('estore_products.')->controller(EstoreProductController::class)->group(function () {
+            Route::get('sort', 'sortView')->name('sort.view');
+            Route::post('sort', 'sortUpdate')->name('sort.update');
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+            Route::post('/{estoreProduct}/clone', 'cloneItem')->name('clone');
+        });
+
+        Route::resource('estore-products', EstoreProductController::class);
+
+        Route::resource('estore-categories', EstoreCategoryController::class);
+
+        //Front Office Stay Bookings routes
+        Route::prefix('mandara-bookings')->name('mandara-bookings.')->controller(MandaraBookingController::class)
+        ->group(function () {
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+            //check existing booking ajax function
+            Route::get('check-existing','checkExisting')->name('check-existing');
+            //payment view
+            Route::get('{booking}/payment', 'paymentView')->name('payment-view');
+            Route::post('{booking}/payment','storePayment')->name('payment-store');
+            //additional details view
+            Route::get('{booking}/additional-details', 'additionalDetails')
+            ->name('additional-details');
+            Route::post('{booking}/additional-details', 'storeAdditionalDetails')
+            ->name('additional-details-store');
+            Route::post('{booking}/approve', 'approve')->name('approve');
+            Route::post('{booking}/reject', 'reject')->name('reject');
+
+        });
+        Route::resource('mandara-bookings', MandaraBookingController::class);
+
+        // Diet Plans routes
+        Route::prefix('diet-plans')->name('diet-plans.')->controller(DietPlanController::class)->group(function () {
+            Route::get('sort', 'sortView')->name('sort.view');
+            Route::post('sort', 'sortUpdate')->name('sort.update');
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+            Route::post('/{diet-plan}/clone', 'cloneItem')->name('clone');
+        });
+        Route::resource('diet-plans', DietPlanController::class);
+        
         // Feedback routes
         Route::prefix('feedbacks')->name('feedbacks.')->controller(FeedbackController::class)->group(function () {
             Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
@@ -387,5 +359,5 @@ Route::middleware(['web','auth:admin'])
         });
 
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-        
+        Route::post('/slug/check', [SlugController::class, 'check'])->name('slug.check');
     });

@@ -5,13 +5,13 @@ namespace App\Services\Payments;
 use App\Models\CottagePackage;
 use App\Models\UserPayment;
 use App\Models\User;
-use App\Models\Package;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Services\Core\BaseService;
 
 class PaymentService extends BaseService
 {
-    protected $modelClass = UserPayment::class;
+    protected $modelClass = Payment::class;
 
     /**
      * Get students options for dropdown
@@ -35,13 +35,15 @@ class PaymentService extends BaseService
      */
     public function getPackagesOptions(): array
     {
-        return CottagePackage::select('id', 'title', 'price', 'offer_price')
+        return CottagePackage::select('id', 'title', 'price', 'discount_amount')
             ->where('status', 'active')
             ->orderBy('title')
             ->get()
             ->mapWithKeys(function ($package) {
-                $price = $package->offer_price ?? $package->price;
-                $label = $package->title . " (₹{$price})";
+                $discount = $package->discount_amount ?? 0;
+                $payable = max(0, (float) $package->price - (float) $discount);
+
+                $label = $package->title . " (₹{$payable})";
                 return [$package->id => $label];
             })
             ->toArray();

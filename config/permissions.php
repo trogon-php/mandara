@@ -14,10 +14,10 @@ return [
 
     // Feeds
     'feeds' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Feed Categories
@@ -30,10 +30,10 @@ return [
 
     // Reels
     'reels' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Reel Categories
@@ -64,18 +64,18 @@ return [
 
     // Course
     'courses' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Course Units
     'course-units' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Course Tutors
@@ -88,10 +88,10 @@ return [
 
     // Exams
     'exams' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Course Reviews
@@ -104,10 +104,10 @@ return [
 
     // Course Features
     'course-features' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Tutors
@@ -120,10 +120,10 @@ return [
 
     // Students
     'students' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Packages
@@ -144,10 +144,10 @@ return [
 
     // Feed
     'feeds' => [
-        'index' => [Role::ADMIN, Role::TUTOR],
-        'create' => [Role::ADMIN, Role::TUTOR],
-        'edit' => [Role::ADMIN, Role::TUTOR],
-        'delete' => [Role::ADMIN, Role::TUTOR],
+        'index' => [Role::ADMIN, Role::NURSE],
+        'create' => [Role::ADMIN, Role::NURSE],
+        'edit' => [Role::ADMIN, Role::NURSE],
+        'delete' => [Role::ADMIN, Role::NURSE],
     ],
 
     // Login Attempts

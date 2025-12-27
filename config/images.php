@@ -47,14 +47,18 @@ return [
 
         'courses_banner' => [1280, 720],
 
-        'banners_image' => [375, 272],
+        'banners_image' => [1125, 816],
         'blogs_image' => [800, 600],
-
+        'diet_plans_image' => [800, 600],
+        'memory_journals_image' => [800, 600],
         'cottage_categories_thumbnail' => [1080, 1080],
         'cottages_image' => [800, 600],
+        'meal_packages_thumbnail' => [800, 600],
     
         'reels_thumbnail' => [1080, 1920],
         'reels_video' => [1920, 1080],
+
+        'estore_product_image' => [800, 600],
 
         'categories_thumbnail' => [
             'original' => [1000, 800],
@@ -89,12 +93,6 @@ return [
             'original' => [900, 600],
             'thumb'    => [300, 200],
         ],
-
-        'question_images' => [800, 600],
-        'paragraph_images' => [800, 600],
-        'option_image' => [800, 600],
-        'assignments_files' => [800, 600],
-        'homeworks_files' => [800, 600],
         
     'fallbacks' => [
         'profile_picture' => 'images/default-avatar.png',

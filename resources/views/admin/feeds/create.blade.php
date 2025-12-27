@@ -27,7 +27,7 @@
             'name' => 'feed_category_id',
             'id' => 'feed_category_id',
             'label' => 'Category',
-            'options' => ['' => 'Select Category'] + $categories->pluck('title', 'id')->toArray(),
+            'options' => $categories ?? [],
             'col' => 6
         ],
         [
@@ -49,14 +49,14 @@
             'accept' => 'image/*',
             'col' => 12
         ],
-        [
-            'type' => 'file',
-            'name' => 'feed_video',
-            'id' => 'feed_video',
-            'label' => 'Feed Video',
-            'presetKey' => 'feeds_video',
-            'accept' => 'video/*',
-            'col' => 12
-        ],
+        // [
+        //     'type' => 'file',
+        //     'name' => 'feed_video',
+        //     'id' => 'feed_video',
+        //     'label' => 'Feed Video',
+        //     'presetKey' => 'feeds_video',
+        //     'accept' => 'video/*',
+        //     'col' => 12
+        // ],
     ]
 ])
