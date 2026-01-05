@@ -6,6 +6,7 @@ use App\Services\App\AppBaseService;
 use App\Services\Users\UserMetaService;
 use App\Services\Users\UserService;
 use App\Http\Resources\User\AppUserProfileResource;
+use Illuminate\Support\Facades\Log;
 
 class ProfileService extends AppBaseService
 {
@@ -26,18 +27,18 @@ class ProfileService extends AppBaseService
     {
         $user = $this->getAuthUser();
         
-        return $this->remember("user:{$user->id}", function () use ($user) {
+        return $this->remember("{$this->cachePrefix}:{$user->id}", function () use ($user) {
             // Get user meta data
             $userMetaService = app(UserMetaService::class);
             $userMeta = $userMetaService->getUserMeta($user->id);
-            
+            // dd($user->refresh());
             // Create resource with meta data
-            $resource = new AppUserProfileResource($user);
+            $resource = new AppUserProfileResource($user->refresh());
             $profileData = $resource->toArray(request());
             
             // Add meta data to profile
             $profileData['meta'] = $userMeta;
-            
+
             return $profileData;
         });
     }

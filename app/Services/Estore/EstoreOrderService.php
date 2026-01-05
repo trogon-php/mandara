@@ -12,7 +12,7 @@ class EstoreOrderService extends BaseService
 {
     protected string $modelClass = EstoreOrder::class;
     protected string $orderNumberPrefix = 'ESTOR-';
-    protected string $receiptPrefix = 'estore_order_receipt_';
+    protected string $receiptPrefix = 'ESTORE_';
     
     public function getFilterConfig(): array
     {
@@ -221,7 +221,7 @@ class EstoreOrderService extends BaseService
 
     public function generateReceipt(): string
     {
-        return $this->receiptPrefix . time() . '-' . strtoupper(Str::random(8));
+        return $this->receiptPrefix . date('ymd') . '_' . rand(1000, 9999);
     }
 
 }

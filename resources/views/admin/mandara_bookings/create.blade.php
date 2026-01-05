@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+
 @section('content')
 
 <!-- start page title -->
@@ -19,208 +20,321 @@
                     @endforeach
                 </ol>
             </div>
-            
         </div>
     </div>
 </div>
 
-<!-- Card -->
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <div class="row">
-                    <div class="col-md-4 col-sm-12">
-                        <a class="btn btn-md btn-outline-dark rounded-pill float-start trogon-link me-2 mt-2"
-                        href="{{ route('admin.mandara-bookings.index') }}">
-                         <i class="mdi mdi-arrow-left"></i>
-                         Back to Mandara Bookings
-                     </a>
-                    </div>
-                </div>
+                <a class="btn btn-md btn-outline-dark rounded-pill trogon-link"
+                   href="{{ route('admin.mandara-bookings.index') }}">
+                    <i class="mdi mdi-arrow-left"></i> Back to Mandara Bookings
+                </a>
             </div>
-
             <div class="card-body">
-                <div id="existing-booking-box" class="alert alert-warning d-none">
-                    <h6 class="mb-2">Existing Booking Found</h6>
-                    <div id="existing-booking-content"></div>
-                </div>
-                
-                @include('admin.crud.form', [
-                    'action' => route('admin.mandara-bookings.store'),
-                    'formId' => 'add-mandara-booking-form',
-                    'submitText' => 'Reserve My Stay',
-                    'fields' => [
-                       
-                        [
-                            'type'=>'text',
-                            'name'=>'phone',
-                            'label'=>'Phone',
-                            'placeholder'=>'Enter the phone number of the client',
-                            'required'=>false,
-                            'col'=>12
-                        ],
-                        [
-                            'type' => 'text',
-                            'name' => 'email',
-                            'id' => 'email',
-                            'label' => 'Email',
-                            'placeholder' => 'Enter the email of the client',
-                            'required' => false,
-                            'col' => 12
-                        ],
-                        [
-                            'type' => 'select',
-                            'name' => 'is_delivered',
-                            'id' => 'is_delivered',
-                            'label' => 'Have you delivered your baby?',
-                            'placeholder' => 'Select the delivery status',
-                            'options' => [
-                                1 => 'Delivered',
-                                0 => 'Expected',
-                            ],
-                            'col' => 12
-                        ],
-                        [
-                            'type' => 'date',
-                            'name' => 'delivery_date',
-                            'id' => 'delivery_date',
-                            'label' => 'Delivery Date',
-                            'placeholder' => 'Select the delivery date',
-                            'required' => false,
-                            'col' => 12
-                        ],
-                        [
-                            'type' => 'date',
-                            'name' => 'date_from',
-                            'id' => 'date_from',
-                            'label' => 'Arrival Date',
-                            'placeholder' => 'Select the arrival date',
-                            'required' => false,
-                            'col' => 6
-                        ],
-                        [
-                            'type' => 'date',
-                            'name' => 'date_to',
-                            'id' => 'date_to',
-                            'label' => 'Departure Date',
-                            'placeholder' => 'Select the departure date',
-                            'required' => false,
-                            'col' => 6
-                        ],
-                        [
-                            'type' => 'textarea',
-                            'name' => 'additional_note',
-                            'id' => 'additional_note',
-                            'label' => 'Additional Note',
-                            'placeholder' => 'Enter the additional note',
-                            'required' => false,
-                            'col' => 6
-                        ],
-                
-                    ]
-                ])
 
-                
+                {{-- STATUS --}}
+                <div id="client-message" class="alert alert-warning d-none"></div>
 
-               
+                {{-- SINGLE FORM --}}
+                <form id="mandara-booking-form"
+                    method="POST"
+                    action="{{ route('admin.mandara-bookings.store') }}">
+                    @csrf
+
+                    {{-- ================= STEP 1 : CLIENT ================= --}}
+                    <h5>Client Details</h5>
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            @include('admin.crud.fields.country-code', [
+                                'name' => 'country_code',
+                                'label' => 'Country Code'
+                            ])
+                        </div>
+
+                        <div class="col-md-6">
+                            @include('admin.crud.fields.text', [
+                                'name' => 'phone',
+                                'label' => 'Phone'
+                            ])
+                        </div>
+
+                        <div class="col-md-6">
+                            @include('admin.crud.fields.text', [
+                                'name' => 'email',
+                                'label' => 'Email'
+                            ])
+                        </div>
+
+                        <div class="col-md-12">
+                            @include('admin.crud.fields.text', [
+                                'name' => 'name',
+                                'label' => 'Full Name',
+                                'required' => true
+                            ])
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            id="next-btn"
+                            class="btn btn-primary mt-3 d-none">
+                        Next
+                    </button>
+
+                    <hr>
+
+                    {{-- ================= STEP 2 : BOOKING ================= --}}
+                    <div id="booking-section" class="d-none">
+
+                        <h5>Booking Details</h5>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                @include('admin.crud.fields.select', [
+                                    'name' => 'cottage_package_id',
+                                    'label' => 'Cottage Package',
+                                    'options' => $cottagePackages,
+                                    'required' => true
+                                ])
+                            </div>
+
+                            <div class="col-md-6">
+                                @include('admin.crud.fields.select', [
+                                    'name' => 'is_delivered',
+                                    'label' => 'Have you delivered your baby?',
+                                    'options' => [1 => 'Delivered', 0 => 'Expected']
+                                ])
+                            </div>
+
+                            <div class="col-md-6">
+                                @include('admin.crud.fields.date', [
+                                    'name' => 'delivery_date',
+                                    'label' => 'Delivery Date'
+                                ])
+                            </div>
+
+                            <div class="col-md-6">
+                                @include('admin.crud.fields.date', [
+                                    'name' => 'date_from',
+                                    'label' => 'Arrival Date'
+                                ])
+                            </div>
+
+                            <div class="col-md-6">
+                                @include('admin.crud.fields.date', [
+                                    'name' => 'date_to',
+                                    'label' => 'Departure Date',
+                                    'readonly' => true
+                                ])
+                            </div>
+
+                            <div class="col-md-6">
+                                @include('admin.crud.fields.textarea', [
+                                    'name' => 'additional_note',
+                                    'label' => 'Additional Note'
+                                ])
+                            </div>
+                            <input type="hidden" name="booking_id" id="booking_id">
+                        </div>
+
+                        <button type="submit" class="btn btn-success mt-3">
+                            Continue 
+                        </button>
+                    </div>
+
+                </form>
             </div>
-        </div>
-    </div>
 </div>
+
+{{-- ================= JS ================= --}}
 <script>
-   
-let debounceTimer = null;
+    let debounceTimer = null;
+    let existingBookingData = null;
+    let autoFilled = false;
+    let searchMode = null;
+    let nameFocusedOnce = false;
 
-// helper: fill field only if empty
-function setIfEmpty(selector, value) {
-    const el = document.querySelector(selector);
-    if (!el || el.value) return;
-    el.value = value;
-}
+    const PACKAGE_DURATIONS = @json($packageDurations);
 
-// helper: set select value safely
-function setSelect(selector, valueMap, value) {
-    const el = document.querySelector(selector);
-    if (!el) return;
+        function fillBookingSection(booking) {
+        if (!booking) return;
+        $('#booking_id').val(booking.id);
+        $('#booking-section').removeClass('d-none');
 
-    const mapped = valueMap[value];
-    if (mapped !== undefined) {
-        el.value = mapped;
-        el.dispatchEvent(new Event('change'));
-    }
-}
+        if (booking.cottage_package_id) {
+            $('[name="cottage_package_id"]')
+                .val(booking.cottage_package_id)
+                .trigger('change.select2');
+        }
 
-function fillFormFields(data) {
-    // text fields
-    if (data.phone) setIfEmpty('input[name="phone"]', data.phone);
-    if (data.email) setIfEmpty('input[name="email"]', data.email);
+        if (booking.is_delivered !== null) {
+            $('[name="is_delivered"]')
+                .val(booking.is_delivered)
+                .trigger('change.select2');
+        }
 
-    // delivery status select
-    if (data.delivery_status) {
-        setSelect(
-            'select[name="is_delivered"]',
-            { 'Delivered': '1', 'Expected': '0' },
-            data.delivery_status
-        );
+        $('[name="delivery_date"]').val(booking.delivery_date || '');
+        $('[name="date_from"]').val(booking.date_from || '');
+        $('[name="date_to"]').val(booking.date_to || '');
+        $('[name="additional_note"]').val(booking.additional_note || '');
     }
 
-    // date fields
-    if (data.delivery_date) setIfEmpty('input[name="delivery_date"]', data.delivery_date);
-    if (data.arrival_date) setIfEmpty('input[name="date_from"]', data.arrival_date);
-    if (data.departure_date) setIfEmpty('input[name="date_to"]', data.departure_date);
+    function checkClient() {
+    
+        const phone        = $('[name="phone"]').val();
+        const email        = $('[name="email"]').val();
+        const country_code = $('[name="country_code"]').val();
+    
+        // Guard
+        if (
+            (!phone && !email) ||
+            (phone && !country_code && !email)
+        ) {
+            return;
+        }
+    
+        fetch(`{{ route('admin.mandara-bookings.check-existing') }}?phone=${encodeURIComponent(phone)}&email=${encodeURIComponent(email)}&country_code=${encodeURIComponent(country_code)}`)
+            .then(res => res.json())
+            .then(res => {
 
-    // textarea
-    if (data.additional_note) {
-        const ta = document.querySelector('textarea[name="additional_note"]');
-        if (ta && !ta.value) ta.value = data.additional_note;
-    }
-}
+            $('#client-message').addClass('d-none').text('');
 
-
-function checkExistingBooking() {
-    const phone = document.querySelector('[name="phone"]')?.value || '';
-    const email = document.querySelector('[name="email"]')?.value || '';
-
-    if (phone.length < 4 && email.length < 4) {
-        hideExistingBox();
-        return;
-    }
-
-    fetch(`{{ route('admin.mandara-bookings.check-existing') }}?phone=${encodeURIComponent(phone)}&email=${encodeURIComponent(email)}`)
-        .then(res => res.json())
-        .then(res => {
+            // ================= EXISTING CLIENT =================
             if (res.status === 1) {
-                fillFormFields(res.data);   // 🔥 AUTO-FILL
-                showExistingBox(res.data);  // (optional preview)
-            } else {
-                hideExistingBox();
+
+                $('[name="name"]')
+                    .val(res.data.name || '')
+                    .prop('readonly', true);
+
+                if (searchMode === 'phone' && res.data.email) {
+                    $('[name="email"]').val(res.data.email);
+                }
+
+                if (searchMode === 'email' && res.data.phone) {
+                    $('[name="phone"]').val(res.data.phone);
+                }
+
+                autoFilled = true;
+                existingBookingData = res.data.booking || null;
+
+                if (existingBookingData) {
+                    fillBookingSection(existingBookingData);
+                    $('#next-btn').addClass('d-none');
+                } else {
+                    $('#booking-section').addClass('d-none');
+                    $('#next-btn').removeClass('d-none');
+                }
             }
+
+            // ================= NEW CLIENT =================
+            else if (res.status === 0) {
+
+                //  HARD RESET — THIS FIXES YOUR BUG
+                autoFilled = false;
+                existingBookingData = null;
+
+                $('[name="name"]')
+                    .val('')
+                    .prop('readonly', false);
+
+                $('#booking-section').addClass('d-none');
+                $('#next-btn').removeClass('d-none');
+
+                $('#client-message')
+                    .removeClass('d-none')
+                    .text('Client not found. Please enter details to create a new client.');
+            }
+
+
+            })
+            .catch(err => {
+            console.error('Client check failed', err);
+            });
+            }
+
+    function calculateDepartureDate() {
+
+        const packageId = $('[name="cottage_package_id"]').val();
+        const arrival   = $('[name="date_from"]').val();
+
+        if (!packageId || !arrival) return;
+
+        const duration = parseInt(PACKAGE_DURATIONS[packageId]);
+
+        if (!duration) return;
+
+        let start = new Date(arrival);
+        start.setDate(start.getDate() + duration - 1);
+
+        const yyyy = start.getFullYear();
+        const mm   = String(start.getMonth() + 1).padStart(2, '0');
+        const dd   = String(start.getDate()).padStart(2, '0');
+
+        $('[name="date_to"]').val(`${yyyy}-${mm}-${dd}`);
+        }
+
+        // Trigger on changes
+        $(document).on('change', '[name="cottage_package_id"], [name="date_from"]', calculateDepartureDate);
+    
+    // Debounce inputs
+       $(document).on('input', '[name="phone"]', function () {
+            searchMode = 'phone';
+            resetClientState('phone');
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(checkClient, 400);
         });
-}
 
-    function fillHiddenFields(data) {
-    if (data.user_id) {
-        document.querySelector('[name="user_id"]').value = data.user_id;
-    }
-    if (data.booking_number) {
-        document.querySelector('[name="booking_number"]').value = data.booking_number;
-    }
-
-}
-
-
-document.addEventListener('input', function (e) {
-    if (e.target.name === 'phone' || e.target.name === 'email') {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(checkExistingBooking, 400);
-    }
-});
-
-
-
+        $(document).on('input', '[name="email"]', function () {
+            searchMode = 'email';
+            resetClientState('email');
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(checkClient, 400);
+        });
 
     
-</script>
+        $(document).on('change', '[name="country_code"]', function () {
+            resetClientState('phone'); 
+            checkClient();
+        });
+        document.getElementById('mandara-booking-form')
+    .addEventListener('submit', function () {
+        const btn = document.getElementById('submit-booking-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = 'Processing...';
+        }
+    });
+    
+    // Next button
+        $('#next-btn').on('click', function () {
+        $('#booking-section').removeClass('d-none');
+        $(this).addClass('d-none');
+    });
+        
+    function resetClientState() {
 
+        autoFilled = false;
+        existingBookingData = null;
+        nameFocusedOnce = false;
+        $('#booking_id').val('');
+        $('#client-message').addClass('d-none').text('');
+
+        $('[name="name"]').prop('readonly', false);
+
+        //  CLEAR booking inputs explicitly
+        $('#booking-section')
+            .addClass('d-none')
+            .find('input, textarea, select')
+            .val('')
+            .trigger('change');
+
+        $('#next-btn').addClass('d-none');
+        }
+
+    </script>
 @endsection

@@ -22,20 +22,11 @@ return [
         'children' => [
             ['title' => 'Clients',    'route' => 'admin/clients',    'can' => 'clients/index'],
             ['title' => 'Guests', 'route' => 'admin/guests', 'can' => 'guests/index'],
+            ['title' => 'Doctors', 'route' => 'admin/doctors', 'can' => 'doctors/index'],
+            ['title' => 'Nurses', 'route' => 'admin/nurses', 'can' => 'nurses/index'],
         ],
     ],
-    [
-        'title' => 'Nurses',
-        'icon'  => 'ri-nurse-line',
-        'route' => 'admin/nurses',
-        'can'   => 'nurses/index',
-    ],
-    [
-        'title' => 'Doctors',
-        'icon'  => 'ri-hospital-line',    
-        'route' => 'admin/doctors',
-        'can'   => 'doctors/index',
-    ],
+   
     // Cottage Management
     [
         'title'     => 'Cottage Management',
@@ -64,13 +55,13 @@ return [
         'title' => 'Estore Products',
         'icon'  => 'ri-shopping-bag-line',
         'route' => 'admin/estore-products',
-        'can'   => 'estore-products/index',
+        'can'   => 'estore-products.index',
     ],
     [
         'title' => 'Estore Categories',
         'icon'  => 'ri-folder-line',
         'route' => 'admin/estore-categories',
-        'can'   => 'estore-categories/index',
+        'can'   => 'estore-categories.index',
     ],
     [
         'title' => 'Estore Orders',
@@ -184,6 +175,23 @@ return [
         'icon'  => 'ri-money-dollar-circle-line',
         'route' => 'admin/mandara-payments',
         'can'   => 'mandara-payments/index',
+    ],
+    [
+        'title' => 'Mandara Booking Questions',
+        'icon'  => 'ri-question-line',
+        'route' => 'admin/mandara-booking-questions',
+        'can'   => 'mandara-booking-questions/index',
+    ],
+    // Amenities
+    [
+        'title'     => 'Amenities Management',
+        'is_header' => true,
+    ],
+    [
+        'title' => 'Amenities',
+        'icon'  => 'ri-building-line',
+        'route' => 'admin/amenities',
+        'can'   => 'amenities/index',
     ],
    
 

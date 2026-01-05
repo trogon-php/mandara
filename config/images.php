@@ -26,7 +26,7 @@ return [
 
 
         // Feed images (single size, square)
-        'feed'    => [1080, 1080],
+        'feed' => [592, 314],
 
         // Gallery images (single size)
         'gallery_image' => [1080, 1080],
@@ -53,6 +53,7 @@ return [
         'memory_journals_image' => [800, 600],
         'cottage_categories_thumbnail' => [1080, 1080],
         'cottages_image' => [800, 600],
+        'mandara_bookings_image' => [800, 600],
         'meal_packages_thumbnail' => [800, 600],
     
         'reels_thumbnail' => [1080, 1920],
@@ -93,7 +94,9 @@ return [
             'original' => [900, 600],
             'thumb'    => [300, 200],
         ],
-        
+        'amenities_icon' => [50, 50],
+
+    ],
     'fallbacks' => [
         'profile_picture' => 'images/default-avatar.png',
         'reviews_profile_image' => 'images/default-avatar.png',
@@ -104,8 +107,6 @@ return [
         'course_thumbnail'  => 'images/course-placeholder.png',
         'banner'  => 'images/default-banner.jpg',
         'roles_profile_image' => 'images/default-avatar.png',
-    ],
-
     ],
 
 ];

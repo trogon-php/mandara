@@ -234,4 +234,63 @@ class ClientService extends BaseService
         }
         return 'not determined';
     }
+     /**
+     * Find client by phone+country OR email (priority-based)
+     */
+    public function findExistingClient(
+        ?string $phone,
+        ?string $countryCode,
+        ?string $email
+    ): ?User {
+        $query = User::query();
+
+        // PRIMARY: phone + country code
+        if (!empty($phone) && !empty($countryCode)) {
+            $query->where('phone', $phone)
+                  ->where('country_code', $countryCode);
+        }
+      
+        // SECONDARY: email
+        elseif (!empty($email)) {
+            $query->where('email', $email);
+        }
+      
+        return $query->first();
+       
+    }
+
+    /**
+     * Find existing client or create a new one
+     */
+    public function findOrCreate(array $data): User
+    {
+        //1. Try to find existing client (SAFE logic)
+        $query = User::where('role_id', 2);
+
+        if (!empty($data['phone']) && !empty($data['country_code'])) {
+            $query->where('phone', $data['phone'])
+                  ->where('country_code', $data['country_code']);
+        } elseif (!empty($data['email'])) {
+            $query->where('email', $data['email']);
+        }
+
+        $user = $query->first();
+
+        if ($user) {
+            return $user;
+        }
+
+        //2. Create new client (country_code WILL be saved)
+        return User::create([
+            'name'         => $data['name'],
+            'email'        => $data['email'] ?? null,
+            'phone'        => $data['phone'] ?? null,
+            'country_code' => $data['country_code'] ?? null,
+            'role_id'      => 2,
+            'status'       => 'active',
+            'password'     => bcrypt('password'), 
+        ]);
+    }
+   
+
 }

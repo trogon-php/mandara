@@ -27,8 +27,8 @@ class AppEstoreProductResource extends BaseResource
 
             return [
                 'title' => $this->title,
-                'price' => number_format($this->price, 2, '.', ''),
-                'mrp' => $this->mrp ? number_format($this->mrp, 2, '.', '') : null,
+                'price' => round($this->price, 2),
+                'mrp' => $this->mrp ? round($this->mrp, 2) : null,
                 'image' => $images[0] ?? null,
             ];
         }
@@ -36,8 +36,8 @@ class AppEstoreProductResource extends BaseResource
             'title' => $this->title,
             // 'short_description' => $this->short_description,
             'description' => $this->description,
-            'price' => number_format($this->price, 2, '.', ''),
-            'mrp' => $this->mrp ? number_format($this->mrp, 2, '.', '') : null,
+            'price' => round($this->price, 2),
+            'mrp' => $this->mrp ? round($this->mrp, 2) : null,
             'discount_percentage' => $this->discount_percentage,
             // 'stock' => $this->stock,
             'is_featured' => (bool)$this->is_featured,

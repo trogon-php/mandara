@@ -83,6 +83,7 @@ class AuthController extends BaseApiController
             // checking any registeration step is pending
             $nextStep = $this->clientAuthService->getAuthNextStep($result['data']['user']['id']);
             $result['data']['next_step'] = $nextStep;
+            $data['data']['onboarding_next_step'] = $this->clientAuthService->getOnboardingNextStep($result['data']['user']['id']);
         }
         return $this->serviceResponse($result, __('messages.login_success'));
     }

@@ -32,6 +32,11 @@ class MandaraBooking extends BaseModel
         'booking_payment_status',
         'approval_status',
         'additional_note',
+        'images',
+        'special_notes',
+        'emergency_contact_name',
+        'emergency_contact_relationship',
+        'emergency_contact_phone',
     ];
 
     protected $casts = [
@@ -40,8 +45,18 @@ class MandaraBooking extends BaseModel
         'booking_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'payable_amount' => 'decimal:2',
+        'is_veg' => 'integer',     
         'have_caretaker' => 'integer',
         'have_siblings' => 'integer',
+        'images' => 'array',
+    ];
+    protected $fileFields = [
+        'images' => [
+            'folder' => 'mandara_bookings',
+            'preset' => 'mandara_bookings_image',
+            'single' => false,
+            'array' => true,
+        ],
     ];
 
     public function user(): BelongsTo

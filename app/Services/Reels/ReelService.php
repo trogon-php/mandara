@@ -155,9 +155,9 @@ class ReelService extends BaseService
     public function getPaginatedReelsByCategory(?int $categoryId, int $perPage = 10)
     {
         return $this->model
-            ->when($categoryId, function ($query) use ($categoryId) {
-                $query->byCategory($categoryId);
-            })
+            // ->when($categoryId, function ($query) use ($categoryId) {
+            //     $query->byCategory($categoryId);
+            // })
             ->active()
             ->sorted()
             ->paginate($perPage);

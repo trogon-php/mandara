@@ -29,18 +29,21 @@ class AuthServiceProvider extends ServiceProvider
         Gate::before(function (User $user, string $ability) {
             if ($user->role_id === Role::ADMIN) {
                 return true;
+            } else {
+                return null;
             }
         });
 
         // Dynamically register all grouped permissions
         foreach (config('permissions') as $module => $actions) {
             foreach ($actions as $action => $allowedRoles) {
-                $ability = "$module/$action"; // e.g. "courses/create"
+                $ability = "{$module}.{$action}"; // e.g. "courses.create"
 
                 Gate::define($ability, function (User $user) use ($allowedRoles) {
-                    return in_array($user->role_id, $allowedRoles);
+                    return in_array($user->role_id, $allowedRoles, true);
                 });
             }
         }
+        // dd(Gate::abilities());
     }
 }

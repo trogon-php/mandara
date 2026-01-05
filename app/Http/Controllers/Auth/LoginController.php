@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,11 +13,10 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         // If already authenticated in any panel, send to that dashboard
-        foreach (['admin','tutor','student'] as $g) {
-            if (Auth::guard($g)->check()) {
-                return redirect()->to($this->dashboardPathFor($g));
-            }
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
         }
+
         return view('auth.login');
     }
 
@@ -27,40 +27,35 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        /** @var User|null $user */
+
         $user = User::where('email', $creds['email'])->first();
         if (!$user) {
             return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
         }
 
-        // Resolve guard by role_id
-        $guard = match ((int) $user->role_id) {
-            1 => 'admin',   // Admin
-            3 => 'tutor',   // Tutor
-            2 => 'student', // Student
-            default => 'web',
-        };
-
-        if (Auth::guard($guard)->attempt($creds, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-
-            // Defense-in-depth: ensure user’s role really matches guard
-            if (!$this->roleMatchesGuard((int)$user->role_id, $guard)) {
-                Auth::guard($guard)->logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                return back()->withErrors(['email' => 'Not authorized for this panel.']);
-            }
-
-            return redirect()->intended($this->dashboardPathFor($guard));
+        // Block non-admin-panel roles early
+        if (!in_array($user->role_id, [
+            Role::ADMIN,
+            Role::DOCTOR,
+            Role::NURSE,
+            Role::ATTENDANT,
+            Role::ESTORE_DELIVERY_STAFF,
+        ], true)) {
+            return back()->withErrors(['email' => 'Not authorized for admin panel.']);
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
+        if (!Auth::guard('admin')->attempt($creds, $request->boolean('remember'))) {
+            return back()->withErrors(['email' => 'Invalid credentials.']);
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     public function logout(Request $request)
     {
-        foreach (['admin','tutor','student','web'] as $guard) {
+        foreach (['admin','doctor','nurse','attendant','estore_delivery_staff','web'] as $guard) {
             if (Auth::guard($guard)->check()) {
                 Auth::guard($guard)->logout();
             }
@@ -73,9 +68,11 @@ class LoginController extends Controller
     private function roleMatchesGuard(int $roleId, string $guard): bool
     {
         return match ($guard) {
-            'admin'   => $roleId === 1,
-            'tutor'   => $roleId === 3,
-            'student' => $roleId === 2,
+            'admin'   => in_array($roleId, [1, 3, 4, 5, 6]),
+            'doctor'   => $roleId === 3,
+            'nurse'   => $roleId === 4,
+            'attendant'   => $roleId === 5,
+            'estore_delivery_staff'   => $roleId === 6,
             default   => true,
         };
     }
@@ -84,7 +81,7 @@ class LoginController extends Controller
     {
         return match ($guard) {
             'admin'   => route('admin.dashboard'),
-            'tutor'   => route('tutor.dashboard'),
+            'nurse'   => route('nurse.dashboard'),
             'student' => route('student.dashboard'),
             default   => url('/'),
         };

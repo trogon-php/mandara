@@ -14,7 +14,7 @@ return [
         'title' => 'Baby Names',
         'image' => 'babyname.png',
         'key' => 'baby_names',
-        'type' => 'web',
+        'type' => 'app',
         'url' => 'https://mellow-kitten-24328d.netlify.app',
     ],
     [

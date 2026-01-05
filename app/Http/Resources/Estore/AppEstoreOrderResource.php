@@ -31,9 +31,9 @@ class AppEstoreOrderResource extends BaseResource
                     return [
                         'id' => $item->id,
                         'product' => [
-                            'id' => $item->product->id,
-                            'title' => $item->product->title,
-                            'image' => $item->product->images_url ? $item->product->images_url[0] : '',
+                            'id' => $item->product?->id ?? 'Product Not Available',
+                            'title' => $item->product?->title ?? 'Product Not Available',
+                            'image' => $item->product?->images_url ? $item->product->images_url[0] : 'Product Not Available',
                         ],
                         'unit_price' => number_format($item->unit_price, 2, '.', ''),
                         'quantity' => $item->quantity,

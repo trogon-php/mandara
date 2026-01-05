@@ -6,10 +6,11 @@ use App\Services\BabySizeComparisons\BabySizeComparisonService;
 use App\Services\Users\UserMetaService;
 use Carbon\Carbon;
 
-class PregnancyService extends AppBaseService
+class UserJourneyService extends AppBaseService
 {
-    protected string $cachePrefix = 'pregnancy';
+    protected string $cachePrefix = 'userjourney';
     protected int $defaultTtl = 300;
+    protected int $cycleLength = 28;
 
     public function __construct(
         protected UserMetaService $userMetaService,
@@ -141,8 +142,11 @@ class PregnancyService extends AppBaseService
         $weeksPassed = max(1, $dob->diffInWeeks($today) + 1);
         $currentWeek = intval(min($weeksPassed, $totalWeeks));
 
-        // Progress %
-        $progress = round(($currentWeek / $totalWeeks) * 100);
+        // Progress percentage of how much days passed %
+        $progress = round(($dob->diffInDays($today) / ($totalWeeks * 7)) * 100);
+
+        $remainingWeeks = $totalWeeks - $currentWeek;
+        $remainingDays = 280 - $dob->diffInDays($today);
 
         return [
             'baby_dob'          => $dob->format('Y-m-d'),
@@ -151,6 +155,9 @@ class PregnancyService extends AppBaseService
             'week_label'        => "{$currentWeek} Weeks Postpartum",
             'start_week'        => 1,
             'end_week'          => 40,
+            'days_since'        => $dob->diffInDays($today),
+            'remaining'         => $remainingWeeks > 0 ? $remainingWeeks : $remainingDays,// weeks or days
+            'remaining_label'   => $totalWeeks - $currentWeek > 0 ? 'wks' : 'days',
             'recovery_end_date' => $endDate->toDateString(),
             'progress_percent'  => $progress,
             'stage'             => $this->stageLabel($currentWeek),
@@ -171,21 +178,91 @@ class PregnancyService extends AppBaseService
         };
     }
 
-    // public function getUserJourney(int $userId): string
-    // {
-    //     $preparingToConceive = $this->userMetaService->getUserMetaValue($userId, 'preparing_to_conceive');
-    //     $isPregnant = $this->userMetaService->getUserMetaValue($userId, 'is_pregnant');
-    //     $isDelivered = $this->userMetaService->getUserMetaValue($userId, 'is_delivered');
+    public function getRecoveryJourneyData(): array
+    {
+        return [
+            [
+                'title' => 'Physical Rest & Healing',
+                'description' => 'Focus on Sleep, and allowing your body to recover from delivery',
+            ],
+            [
+                'title' => 'Physical Rest & Healing',
+                'description' => 'Focus on Sleep, and allowing your body to recover from delivery',
+            ],
+            [
+                'title' => 'Physical Rest & Healing',
+                'description' => 'Focus on Sleep, and allowing your body to recover from delivery',
+            ],
+        ];
+    }
+    public function getWellnessGuideData(): array
+    {
+        return [
+            [
+                'image' => 'https://mandara-files.trogon.info/app/uploads/media/69521df434aad.png',
+                'title' => 'Physical',
+                'description' => 'Focus on rest, nutrition and gentle movement, Listen to your body',
+            ],
+            [
+                'image' => 'https://mandara-files.trogon.info/app/uploads/media/69521df3daca2.png',
+                'title' => 'Mental',
+                'description' => 'Acknowlege your feelings and seek support when needed',
+            ],
+            [
+                'image' => 'https://mandara-files.trogon.info/app/uploads/media/69521df399699.png',
+                'title' => 'Social',
+                'description' => 'Stay connected with your support network and community',
+            ],
+            [
+                'image' => 'https://mandara-files.trogon.info/app/uploads/media/69521df2a07c9.png',
+                'title' => 'Medical',
+                'description' => 'Attend checkups and contact your provider with concerns',
+            ],
+        ];
+    }
 
-    //     if($preparingToConceive && $preparingToConceive == 1) {
-    //         return 'preparing';
-    //     }
-    //     if($isPregnant && $isPregnant == 1) {
-    //         return 'pregnant';
-    //     }
-    //     if($isDelivered && $isDelivered == 1) {
-    //         return 'delivered';
-    //     }
-    //     return 'not determined';
-    // }
+    public function getWeeklyTipsData(int $currentWeek): array
+    {
+        switch($currentWeek) {
+            case 1:
+                return [
+                    'title' => 'Week 1',
+                    'description' => 'Focus on rest, nutrition and gentle movement, Listen to your body',
+                ];
+            case 2:
+                return [
+                    'title' => 'Week 2',
+                    'description' => 'Focus on rest, nutrition and gentle movement, Listen to your body',
+                ];
+            default:
+                return [
+                    'title' => 'Week ' . $currentWeek,
+                    'description' => 'Focus on rest, nutrition and gentle movement, Listen to your body',
+                ];
+        }
+    }
+    public function getFertilityOverview(string $lastPeriodDate): array
+    {
+        $cycleLength = $this->cycleLength;
+        $last = Carbon::parse($lastPeriodDate);
+        $today = Carbon::today();
+
+        $cycleProgress = round(($last->diffInDays($today) / ($cycleLength * 7)) * 100);
+
+        return [
+            'cycle_progress' => $cycleProgress,
+            'next_period_date' => $last->copy()->addDays($cycleLength)->format('M d'),
+            'since' => 'in ' . $last->diffInDays($today) . ' days',
+        ];
+    }
+    public function calculateNextPeriodDate(string $lastPeriodDate, int $cycleLength): string
+    {
+        $last = Carbon::parse($lastPeriodDate);
+        return $last->copy()->addDays($cycleLength)->format('Y-m-d');
+    }
+
+    public function getPeriodReport()
+    {
+        $report = [];
+    }
 }

@@ -18,6 +18,7 @@
             <th><input type="checkbox" id="select-all-bulk" class="form-check-input"></th>
             <th>#</th>
             <th>Booking Number</th>
+            <th>Cottage Package</th>
             <th>User Name</th>
             <th>Delivery Status</th>
             <th>Arrival Date</th>

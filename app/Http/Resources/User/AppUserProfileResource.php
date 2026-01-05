@@ -3,6 +3,7 @@
 namespace App\Http\Resources\User;
 
 use App\Enums\Role;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppUserProfileResource extends JsonResource
@@ -15,6 +16,7 @@ class AppUserProfileResource extends JsonResource
         return [
             'id'         => $this->id,
             'name'       => $this->name,
+            'age'        => Carbon::parse($this->getMetaField('date_of_birth'))->age,
             'phone'      => $this->phone,
             'country_code' => $this->country_code,
             'email'      => $this->email,

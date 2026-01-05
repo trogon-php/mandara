@@ -4,6 +4,10 @@ use App\Models\Role;
 
 
 return [
+    // Dashboard - all admin panel roles can access
+    'dashboard' => [
+        'index' => [Role::ADMIN, Role::DOCTOR, Role::NURSE, Role::ATTENDANT, Role::ESTORE_DELIVERY_STAFF],
+    ],
     // Category
     'categories' => [
         'index' => [Role::ADMIN],
@@ -14,10 +18,10 @@ return [
 
     // Feeds
     'feeds' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
+        'index' => [Role::ADMIN],
+        'create' => [Role::ADMIN],
+        'edit' => [Role::ADMIN],
+        'delete' => [Role::ADMIN],
     ],
 
     // Feed Categories
@@ -30,10 +34,10 @@ return [
 
     // Reels
     'reels' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
+        'index' => [Role::ADMIN,],
+        'create' => [Role::ADMIN,],
+        'edit' => [Role::ADMIN],
+        'delete' => [Role::ADMIN,],
     ],
 
     // Reel Categories
@@ -54,78 +58,6 @@ return [
         'consolidated' => [Role::ADMIN],
     ],
 
-    // Batch
-    'batches' => [
-        'index' => [Role::ADMIN],
-        'create' => [Role::ADMIN],
-        'edit' => [Role::ADMIN],
-        'delete' => [Role::ADMIN],
-    ],
-
-    // Course
-    'courses' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
-    ],
-
-    // Course Units
-    'course-units' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
-    ],
-
-    // Course Tutors
-    'course-tutors' => [
-        'index' => [Role::ADMIN],
-        'create' => [Role::ADMIN],
-        'edit' => [Role::ADMIN],
-        'delete' => [Role::ADMIN],
-    ],
-
-    // Exams
-    'exams' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
-    ],
-
-    // Course Reviews
-    'course-reviews' => [
-        'index' => [Role::ADMIN],
-        'create' => [Role::ADMIN],
-        'edit' => [Role::ADMIN],
-        'delete' => [Role::ADMIN],
-    ],
-
-    // Course Features
-    'course-features' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
-    ],
-
-    // Tutors
-    'tutors' => [
-        'index' => [Role::ADMIN],
-        'create' => [Role::ADMIN],
-        'edit' => [Role::ADMIN],
-        'delete' => [Role::ADMIN],
-    ],
-
-    // Students
-    'students' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
-    ],
-
     // Packages
     'packages' => [
         'index' => [Role::ADMIN],
@@ -142,18 +74,28 @@ return [
         'delete' => [Role::ADMIN],
     ],
 
-    // Feed
-    'feeds' => [
+    // Login Attempts
+    'login-attempts' => [
+        'index' => [Role::ADMIN],
+    ],
+
+    'mandara-bookings' => [
+        'index' => [Role::ADMIN],
+        'create' => [Role::ADMIN],
+        'edit' => [Role::ADMIN],
+        'delete' => [Role::ADMIN],
+    ],
+    'estore-products' => [
         'index' => [Role::ADMIN, Role::NURSE],
         'create' => [Role::ADMIN, Role::NURSE],
         'edit' => [Role::ADMIN, Role::NURSE],
         'delete' => [Role::ADMIN, Role::NURSE],
     ],
-
-    // Login Attempts
-    'login-attempts' => [
+    'estore-categories' => [
         'index' => [Role::ADMIN],
-    ]
-    
+        'create' => [Role::ADMIN],
+        'edit' => [Role::ADMIN],
+        'delete' => [Role::ADMIN],
+    ],
     
 ];

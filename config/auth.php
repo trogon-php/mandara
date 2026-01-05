@@ -39,8 +39,10 @@ return [
         'web' => ['driver' => 'session', 'provider' => 'users'],
 
         'admin' => ['driver' => 'session', 'provider' => 'users'],
-        'tutor' => ['driver' => 'session', 'provider' => 'users'],
-        'student' => ['driver' => 'session', 'provider' => 'users'],
+        'doctor' => ['driver' => 'session', 'provider' => 'users'],
+        'nurse' => ['driver' => 'session', 'provider' => 'users'],
+        'attendant' => ['driver' => 'session', 'provider' => 'users'],
+        'estore_delivery_staff' => ['driver' => 'session', 'provider' => 'users'],
         
         // Replace Sanctum with JWT
         'api' => ['driver' => 'jwt', 'provider' => 'users'],

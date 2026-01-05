@@ -24,7 +24,7 @@ class HomeService extends AppBaseService
         protected ReelService $reels,
         protected GalleryImageService $galleryImages,
         protected NotificationService $notifications,
-        protected PregnancyService $pregnancyService,
+        protected UserJourneyService $userJourneyService,
         protected ClientService $clientService,
     ) {}
 
@@ -62,13 +62,13 @@ class HomeService extends AppBaseService
             $content = [];
 
             if($user->getMetaField('preparing_to_conceive') == 1) {
-                $content['journey_cycle'] = $this->pregnancyService->calculatePeriodCycle($user->getMetaField('last_period_date'));
+                $content['journey_cycle'] = $this->userJourneyService->calculatePeriodCycle($user->getMetaField('last_period_date'));
             }
             if($user->getMetaField('is_pregnant') == 1) {
-                $content['journey_cycle'] = $this->pregnancyService->getPregnancyProgress();
+                $content['journey_cycle'] = $this->userJourneyService->getPregnancyProgress();
             }
             if($user->getMetaField('is_delivered') == 1) {
-                $content['journey_cycle'] = $this->pregnancyService->postpartumTimeline($user->getMetaField('baby_dob'));
+                $content['journey_cycle'] = $this->userJourneyService->postpartumTimeline($user->getMetaField('baby_dob'));
             }
             $content['journey_cycle']['journey_type'] = $this->clientService->getJourneyStatus($user->id);
             

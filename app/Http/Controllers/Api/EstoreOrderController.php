@@ -15,6 +15,7 @@ class EstoreOrderController extends BaseApiController
         $perPage = $request->get('per_page', 15);
         $user = $this->getAuthUser();
         $orders = $this->estoreService->getMyOrders($user->id, $perPage);
+        // dd($orders);
         $orders = AppEstoreOrderResource::collection($orders);
 
         return $this->respondPaginated($orders, 'Orders retrieved successfully');

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\AdminBaseController;
+use App\Models\MandaraBooking;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\Dashboard\DashboardService;
 
@@ -18,6 +21,21 @@ class DashboardController extends AdminBaseController
 
     public function index()
     {
+        $user = $this->user();
+        
+        // Check if user is a nurse
+        if ($user->role_id === Role::NURSE) {
+            return $this->nurseDashboard();
+        }
+        
+        // Default admin dashboard
+        return $this->adminDashboard();
+    }
+    /**
+     * Admin Dashboard
+     */
+    private function adminDashboard()
+    {
         // Get dashboard data from service
         // $dashboardData = $this->dashboardService->getDashboardData();
         $dashboardData = [];
@@ -25,9 +43,35 @@ class DashboardController extends AdminBaseController
         $dashboardData['page_title'] = 'Admin Dashboard';
         $dashboardData['page_name'] = 'dashboard';
         $dashboardData['user'] = $this->user();
+        $dashboardData['number_of_bookings'] = 32;
+        $dashboardData['approved_bookings'] = 5;
+        $dashboardData['pending_bookings'] = 10;
+        $dashboardData['number_of_clients'] = 58;
+        $dashboardData['new_bookings_today'] = 2;
+        $dashboardData['new_bookings_week'] = 15;
+        $dashboardData['latest_bookings'] = app(MandaraBooking::class)->latest()->take(5)->get();
+        $dashboardData['latest_users'] = app(User::class)->where('role_id', Role::CLIENT)->latest()->take(5)->get();
+        // dd($dashboardData['latest_clients']);
 
-        
         return view('admin.dashboard.index', $dashboardData);
+    }
+    
+    /**
+     * Nurse Dashboard
+     */
+    private function nurseDashboard()
+    {
+        // Get nurse-specific dashboard data
+        $dashboardData = [];
+        $dashboardData['page_title'] = 'Nurse Dashboard';
+        $dashboardData['page_name'] = 'dashboard';
+        $dashboardData['user'] = $this->user();
+        
+        // Add nurse-specific data here
+        // Example: $dashboardData['my_feeds'] = ...;
+        // Example: $dashboardData['my_reels'] = ...;
+        
+        return view('admin.dashboard.nurse', $dashboardData);
     }
     
     /**

@@ -69,12 +69,6 @@ return [
         'enabled'  => true,
     ],
 
-    'diet_remarks' => [
-        'type'     => 'textarea',
-        'required' => false,
-        'enabled'  => true,
-    ],
-
     'husband_name' => [
         'type'     => 'text',
         'required' => false,
@@ -99,6 +93,11 @@ return [
     'meal_package_id' => [
         'type'     => 'relation',
         'model'    => \App\Models\MealPackage::class,
+        'required' => false,
+        'enabled'  => true,
+    ],
+    'deliver_breakfast_to_room' => [
+        'type'     => 'integer',
         'required' => false,
         'enabled'  => true,
     ],

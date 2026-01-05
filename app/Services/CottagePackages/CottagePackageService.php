@@ -4,6 +4,7 @@ namespace App\Services\CottagePackages;
 
 use App\Models\CottagePackage;
 use App\Services\Core\BaseService;
+use Exception;
 
 class CottagePackageService extends BaseService
 {
@@ -66,4 +67,39 @@ class CottagePackageService extends BaseService
 
         return parent::store($data);
     }
+    public function getOptions(): array
+    {
+        return CottagePackage::orderBy('title')
+            ->pluck('title', 'id')
+            ->toArray();
+    }
+    public function getOptionsWithDuration(): array
+    {
+        return $this->model
+            ->where('status', 'active')
+            ->get()
+            ->mapWithKeys(function ($pkg) {
+                return [
+                    $pkg->id => [
+                        'label'    => $pkg->title . ' (' . $pkg->duration_days . ' days)',
+                        'duration' => $pkg->duration_days,
+                    ]
+                ];
+            })
+            ->toArray();
+    }
+    /**
+     * Find a package or throw exception
+     */
+    public function findOrFail(int $id): CottagePackage
+    {
+        $package = $this->model->find($id);
+
+        if (!$package) {
+            throw new Exception('Cottage package not found.');
+        }
+
+        return $package;
+    }
+
 }

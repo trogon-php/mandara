@@ -95,6 +95,13 @@ class EstoreService extends AppBaseService
                     'receipt' => $razorpayReceipt,
                     'notes' => $data['notes']
                 ]);
+                if(!$razorpayOrder['status']) {
+                    return [
+                        'status' => false,
+                        'message' => 'Failed to create order',
+                        'http_code' => Response::HTTP_OK
+                    ];
+                }
                 $orderData['payment_order_id'] = $razorpayOrder['order_id'];
             }
 

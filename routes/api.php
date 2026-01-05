@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 // App version API
 use App\Http\Controllers\Api\ {
+    AmenityController,
     AppVersionController,
     // Authentication API
     AuthController,
@@ -23,13 +24,19 @@ use App\Http\Controllers\Api\ {
     ProfileController,
     // Package API
     FeedController,
+    FoodCartController,
+    FoodItemController,
+    FoodMenuController,
+    FoodOrderController,
     GalleryImageController,
     NotificationController,
     ReelApiController,
     MandaraBookingController,
+    MandaraDashboardController,
     MealPackageApiController,
     MemoryJournalController,
     QaController,
+    UserJourneyController,
 };
 
 
@@ -173,11 +180,59 @@ Route::prefix('v1')->group(function () {
                 Route::post('/complete', 'completeOrder');
             });
         });
-        // Feedback API
-        // Route::prefix('feedback')->controller(FeedbackController::class)->group(function () {
-        //     Route::get('/', 'index');
-        //     Route::post('/', 'store');
-        // });
+        
+        // Baby Wellness
+        Route::prefix('baby-wellness')->controller(UserJourneyController::class)->group(function () {
+            Route::get('/', 'babyWellness');
+        });
 
+        // Fertility Overview
+        Route::prefix('fertility')->controller(UserJourneyController::class)->group(function () {
+            Route::get('/overview', 'fertilityOverview');
+            Route::post('/get-my-date', 'getNextPeriodDate');
+        });
+
+        // Mandara Dashboard API
+        Route::prefix('mandara-dashboard')->controller(MandaraDashboardController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/baby', 'getBabyDashboard');
+            Route::get('/mother', 'getMotherDashboard');
+        });
+        // Amenities API
+        Route::prefix('amenities')->controller(AmenityController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/{id}', 'getAmenityPage');
+            Route::post('{id}/book', 'createBooking');
+        });
+
+        // Food Menu API
+        Route::prefix('food-menu')->controller(FoodMenuController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::post('/update-meal-config', 'updateMealConfiguration');
+        });
+
+        // Food Items API
+        Route::prefix('food-items')->controller(FoodItemController::class)->group(function () {
+            Route::get('/categories', 'getFoodCategories');
+            Route::get('/', 'getFoodItems');
+        });
+        
+        Route::prefix('food')->group(function () {
+            Route::prefix('cart')->controller(FoodCartController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/', 'store');
+                Route::put('/{id}', 'update');
+                Route::delete('/{id}', 'destroy');
+                Route::delete('/', 'clear');
+                Route::get('/total', 'total');
+                Route::get('/checkout', 'checkout');
+            });
+            
+            Route::prefix('orders')->controller(FoodOrderController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/create', 'store');
+                Route::post('/complete', 'completeOrder');
+            });
+        });
     });
 });

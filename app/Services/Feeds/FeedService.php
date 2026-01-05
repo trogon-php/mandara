@@ -318,12 +318,17 @@ class FeedService extends BaseService
             'empty' => $this->getEmptyFeeds()->count(),
         ];
     }
+    #TODO: Need to fix this by category ID
     public function getPaginatedFeedsByCategory(?int $categoryId, int $perPage = 10)
     {
         return $this->model
-            ->when($categoryId, function ($query) use ($categoryId) {
-                $query->byCategory($categoryId);
-            })
+            // ->when($categoryId && $categoryId > 0, function ($query) use ($categoryId) {
+            //     $query->where(function ($q) use ($categoryId) {
+            //         $q->where('feed_category_id', $categoryId)
+            //         ->orWhereNull('feed_category_id')
+            //         ->orWhere('feed_category_id', 0);
+            //     });
+            // })
             ->active()
             ->sorted()
             ->paginate($perPage);

@@ -31,6 +31,8 @@ use App\Http\Controllers\Admin\{
     BannerController,
     BlogController,
     ClientController,
+    NurseController,
+    DoctorController,
     ReelCategoryController,
     ReelController,
     GalleryAlbumController,
@@ -52,6 +54,9 @@ use App\Http\Controllers\Admin\{
     EstoreCategoryController,
     EstoreProductController,
     MandaraBookingController,
+    MandaraPaymentController,
+    MandaraBookingQuestionsController,
+    AmenityController,
     //  Reports
     ReferralReportController,
     SlugController,
@@ -163,6 +168,16 @@ Route::middleware(['web','auth:admin'])
             Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
         });
         Route::resource('clients', ClientController::class);
+        // Nurses routes
+        Route::prefix('nurses')->name('nurses.')->controller(NurseController::class)->group(function () {
+            Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
+        });
+        Route::resource('nurses', NurseController::class);
+        // Doctors routes
+        Route::prefix('doctors')->name('doctors.')->controller(DoctorController::class)->group(function () {
+            Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
+        });
+        Route::resource('doctors', DoctorController::class);
 
         // Cottage Packages routes
         Route::prefix('cottage-packages')->name('cottage-packages.')->controller(CottagePackageController::class)->group(function () {
@@ -279,7 +294,7 @@ Route::middleware(['web','auth:admin'])
         });
 
         // Estore Products routes
-        Route::prefix('estore-products')->name('estore_products.')->controller(EstoreProductController::class)->group(function () {
+        Route::prefix('estore-products')->name('estore-products.')->controller(EstoreProductController::class)->group(function () {
             Route::get('sort', 'sortView')->name('sort.view');
             Route::post('sort', 'sortUpdate')->name('sort.update');
             Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
@@ -309,6 +324,22 @@ Route::middleware(['web','auth:admin'])
 
         });
         Route::resource('mandara-bookings', MandaraBookingController::class);
+        
+        // Mandara Payments routes
+        Route::prefix('mandara-payments')->name('mandara-payments.')->controller(MandaraPaymentController::class)->group(function () {
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+        });
+        Route::resource('mandara-payments', MandaraPaymentController::class);
+        // Mandara Booking Questions routes
+        Route::prefix('mandara-booking-questions')->name('mandara-booking-questions.')->controller(MandaraBookingQuestionsController::class)->group(function () {
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+        });
+        Route::resource('mandara-booking-questions', MandaraBookingQuestionsController::class);
+        //Amenities routes
+        Route::prefix('amenities')->name('amenities.')->controller(AmenityController::class)->group(function () {
+            Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+        });
+        Route::resource('amenities', AmenityController::class);
 
         // Diet Plans routes
         Route::prefix('diet-plans')->name('diet-plans.')->controller(DietPlanController::class)->group(function () {

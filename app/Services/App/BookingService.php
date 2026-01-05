@@ -168,7 +168,14 @@ class BookingService extends AppBaseService
                 'receipt' => $razorpayReceipt,
                 'notes' => $data['notes']
             ]);
-
+            if(!$razorpayOrder['status']) {
+                return [
+                    'status' => false,
+                    'message' => 'Failed to create order',
+                    'data' => [],
+                    'http_code' => Response::HTTP_OK
+                ];
+            }
             $orderData = [
                 'booking_id' => $mandaraBooking->id,
                 'payment_status' => 'unpaid',
@@ -269,6 +276,10 @@ class BookingService extends AppBaseService
             ];
         }
         $this->mandaraBookingService->update($mandaraBooking->id, $data);
+
+        // store vegitarian status in user meta
+        $this->userMetaService->updateUserMetaValue($userId, 'is_veg', $data['is_veg']);
+        
         return [
             'status' => true,
             'message' => 'Additional booking information saved successfully',

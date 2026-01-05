@@ -6,11 +6,16 @@ use App\Http\Requests\EstoreProducts\StoreEstoreProductRequest as StoreRequest;
 use App\Http\Requests\EstoreProducts\UpdateEstoreProductRequest as UpdateRequest;
 use App\Services\Estore\EstoreProductService;
 use Illuminate\Http\Request;
-use App\Models\EstoreCategory;
 
 class EstoreProductController extends AdminBaseController
 {
-    public function __construct(private EstoreProductService $service) {}
+    public function __construct(private EstoreProductService $service)
+    {
+        $this->middleware('can:estore-products.index')->only(['index', 'sortView']);
+        $this->middleware('can:estore-products.create')->only(['create', 'store', 'cloneItem']);
+        $this->middleware('can:estore-products.edit')->only(['edit', 'update', 'sortUpdate']);
+        $this->middleware('can:estore-products.delete')->only(['destroy', 'bulkDelete']);
+    }
 
     public function index(Request $request)
     {

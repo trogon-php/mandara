@@ -40,7 +40,7 @@
             'col' => 12
         ],
         [
-            'type' => 'file',
+            'type' => 'image',
             'name' => 'image',
             'label' => 'Diet Plan Image',
             'presetKey' => 'diet_plans_image',

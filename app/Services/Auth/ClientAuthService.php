@@ -64,11 +64,14 @@ class ClientAuthService extends BaseAuthService
         $booking = app(MandaraBookingService::class)->getByUserId($id);
         if($booking && $booking->booking_payment_status == 'paid') {
             if($booking->address == null) {
-                return 2;
+                return 3;
             }
             return 0;
         }
-        return 1;
+        if(!$booking) {
+            return 1;
+        }
+        return 2;
     }
     private function isStepPending($user, $stepNumber)
     {

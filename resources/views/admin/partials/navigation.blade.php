@@ -38,15 +38,68 @@
             <div id="two-column-menu"></div>
 
             <ul class="navbar-nav" id="navbar-nav">
-                @foreach(config('admin_menu') as $item)
+                @php
+                    $menuItems = config('admin_menu');
+                    $visibleHeaders = [];
+                    $currentHeader = null;
+                    
+                    // First pass: determine which headers have visible items
+                    foreach ($menuItems as $item) {
+                        if (!empty($item['is_header'])) {
+                            $currentHeader = $item;
+                            continue;
+                        }
+                        
+                        // Check if this item is visible
+                        $isVisible = false;
+                        
+                        // Permission check
+                        if (!empty($item['can']) && !auth()->user()->can($item['can'])) {
+                            continue;
+                        }
+                        
+                        // Feature check
+                        if (!empty($item['feature']) && !has_feature($item['feature'])) {
+                            continue;
+                        }
+                        
+                        // For dropdowns, check if any children are visible
+                        if (!empty($item['children'])) {
+                            $visibleChildren = collect($item['children'])->filter(function($child) {
+                                return empty($child['can']) || auth()->user()->can($child['can']);
+                            });
+                            
+                            if ($visibleChildren->isEmpty()) {
+                                continue;
+                            }
+                        }
+                        
+                        // If we get here, the item is visible
+                        // Mark the current header as having visible items
+                        if ($currentHeader) {
+                            $visibleHeaders[$currentHeader['title']] = true;
+                        }
+                    }
+                @endphp
+
+                @php
+                    $currentHeader = null;
+                @endphp
+                @foreach($menuItems as $item)
 
                     {{-- Header --}}
                     @if(!empty($item['is_header']))
-                        <li class="nav-item">
-                            <div class="menu-title text-primary text-uppercase fs-11 fw-semibold ms-2">
-                                <span>{{ $item['title'] }}</span>
-                            </div>
-                        </li>
+                        @php
+                            $currentHeader = $item;
+                        @endphp
+                        {{-- Only show header if it has visible items following it --}}
+                        @if(isset($visibleHeaders[$item['title']]))
+                            <li class="nav-item">
+                                <div class="menu-title text-primary text-uppercase fs-11 fw-semibold ms-2">
+                                    <span>{{ $item['title'] }}</span>
+                                </div>
+                            </li>
+                        @endif
                         @continue
                     @endif
 
