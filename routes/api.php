@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\ {
     // Estore
     EstoreCartController,
     EstoreController,
+    EstoreDeliveryController,
     EstoreOrderController,
 
     ProfileController,
@@ -179,6 +180,20 @@ Route::prefix('v1')->group(function () {
                 Route::post('/create', 'store');
                 Route::post('/complete', 'completeOrder');
             });
+
+            // Delivery Staff API
+            Route::middleware(['role:delivery_staff'])->group(function () {
+                Route::prefix('delivery')->controller(EstoreDeliveryController::class)->group(function () {
+                    Route::get('/dashboard', 'dashboard');
+                    Route::prefix('orders')->group(function () {
+                        Route::get('/', 'index');
+                        Route::get('/{id}', 'show');
+                        Route::post('/{id}/start', 'startDelivery');
+                        Route::put('/{id}/status', 'updateStatus');
+                        Route::post('/{id}/deliver', 'markDelivered');
+                    });
+                });
+            });
         });
         
         // Baby Wellness
@@ -189,7 +204,8 @@ Route::prefix('v1')->group(function () {
         // Fertility Overview
         Route::prefix('fertility')->controller(UserJourneyController::class)->group(function () {
             Route::get('/overview', 'fertilityOverview');
-            Route::post('/get-my-date', 'getNextPeriodDate');
+            Route::post('/get-my-date', 'getOvulationDate');
+            Route::post('/confirm-period', 'confirmPeriod');
         });
 
         // Mandara Dashboard API

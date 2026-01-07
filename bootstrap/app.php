@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'user.active' => \App\Http\Middleware\IsUserActive::class,
             'jwt.validate' => \App\Http\Middleware\JwtAuthenticate::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

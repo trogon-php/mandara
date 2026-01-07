@@ -37,6 +37,7 @@ class MandaraBooking extends BaseModel
         'emergency_contact_name',
         'emergency_contact_relationship',
         'emergency_contact_phone',
+        'consent',
     ];
 
     protected $casts = [
@@ -58,6 +59,14 @@ class MandaraBooking extends BaseModel
             'array' => true,
         ],
     ];
+    protected $appends = ['is_app_booking'];
+
+    public function getIsAppBookingAttribute()
+    {
+        return \App\Models\MandaraBookingOrder::where('booking_id', $this->id)
+            ->whereNotNull('payment_order_id')
+            ->exists();
+    }
 
     public function user(): BelongsTo
     {

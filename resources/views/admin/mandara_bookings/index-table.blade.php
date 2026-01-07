@@ -62,28 +62,39 @@
                         'redirectUrl' => route('admin.mandara-bookings.index')
                     ])
             
-                    {{-- UNPAID BADGE --}}
+                   {{-- UNPAID BADGE --}}
                     @if($list_item->booking_payment_status !== 'paid')
-                        <span class="badge bg-secondary">
-                            Unpaid
-                        </span>
-            
+                    <span class="badge bg-secondary">
+                        Unpaid
+                    </span>
+
                     {{-- PAID CASE --}}
                     @else
-            
+
+                    {{-- WEB BOOKING → AUTO APPROVED --}}
+                    @if(!$list_item->is_app_booking)
+                   
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+
+                    {{-- APP BOOKING --}}
+                    @else
+
                         {{-- APPROVED / REJECTED BADGE --}}
                         @if(in_array($list_item->approval_status, ['approved', 'rejected']))
                             <span class="badge {{ $list_item->approval_status === 'approved' ? 'bg-success' : 'bg-danger' }}">
                                 {{ ucfirst($list_item->approval_status) }}
                             </span>
                         @endif
-            
-                        {{-- APPROVE / REJECT BUTTONS (ONLY WHEN PENDING) --}}
+
+                        {{-- APPROVE / REJECT BUTTONS (ONLY WHEN PENDING & APP BOOKING) --}}
                         @if($list_item->approval_status === 'pending')
-            
+
                             {{-- Approve --}}
-                            <form method="POST"
-                                  action="{{ route('admin.mandara-bookings.approve', $list_item->id) }}">
+                            {{-- <form method="POST"
+                                action="{{ route('admin.mandara-bookings.approve', $list_item->id) }}"
+                                class="d-inline">
                                 @csrf
                                 <button type="submit"
                                         class="btn btn-success btn-sm rounded-circle"
@@ -91,11 +102,18 @@
                                         onclick="return confirm('Approve this booking?')">
                                     <i class="ri-check-line"></i>
                                 </button>
-                            </form>
-            
+                            </form> --}}
+                            <a href="{{ route('admin.mandara-bookings.create', ['booking_id' => $list_item->id]) }}"
+                                class="btn btn-success btn-sm rounded-circle"
+                                title="Approve">
+                                 <i class="ri-check-line"></i>
+                             </a>
+                             
+
                             {{-- Reject --}}
                             <form method="POST"
-                                  action="{{ route('admin.mandara-bookings.reject', $list_item->id) }}">
+                                action="{{ route('admin.mandara-bookings.reject', $list_item->id) }}"
+                                class="d-inline">
                                 @csrf
                                 <button type="submit"
                                         class="btn btn-danger btn-sm rounded-circle"
@@ -104,10 +122,13 @@
                                     <i class="ri-close-line"></i>
                                 </button>
                             </form>
-            
+
                         @endif
-            
+
                     @endif
+
+                    @endif
+
             
                 </div>
             </td>  

@@ -3,6 +3,7 @@
 namespace App\Services\App;
 
 use App\Services\BabySizeComparisons\BabySizeComparisonService;
+use App\Services\UserPeriodHistory\UserPeriodHistoryService;
 use App\Services\Users\UserMetaService;
 use Carbon\Carbon;
 
@@ -14,7 +15,8 @@ class UserJourneyService extends AppBaseService
 
     public function __construct(
         protected UserMetaService $userMetaService,
-        protected BabySizeComparisonService $babySizeComparisonService
+        protected BabySizeComparisonService $babySizeComparisonService,
+        protected UserPeriodHistoryService $periodHistoryService
     ) {}
 
     /**
@@ -260,9 +262,109 @@ class UserJourneyService extends AppBaseService
         $last = Carbon::parse($lastPeriodDate);
         return $last->copy()->addDays($cycleLength)->format('Y-m-d');
     }
-
-    public function getPeriodReport()
+    public function calculateOvulationDate(string $lastPeriodDate, int $cycleLength): string
     {
-        $report = [];
+        $last = Carbon::parse($lastPeriodDate);
+        return $last->copy()->addDays($cycleLength - 14)->format('Y-m-d');
+    }
+
+    public function getCycleOverview(?int $userId = null): ?array
+    {
+        if (!$userId) {
+            $user = $this->getAuthUser();
+            if (!$user) return null;
+            $userId = $user->id;
+        }
+
+        $lastPeriodDate = $this->userMetaService->getUserMetaValue($userId, 'last_period_date');
+        if (!$lastPeriodDate) return null;
+
+        $avgCycleLength = (int) $this->userMetaService->getUserMetaValue($userId, 'avg_cycle_length', 28);
+        $stats = $this->periodHistoryService->getPeriodStats($userId);
+        
+        $lastPeriod = Carbon::parse($lastPeriodDate);
+        $today = Carbon::today();
+        $daysSinceLastPeriod = $lastPeriod->diffInDays($today);
+        $currentDay = $daysSinceLastPeriod + 1;
+        
+        // Calculate next period date
+        $nextPeriodDate = $lastPeriod->copy()->addDays($avgCycleLength);
+        $daysUntilNextPeriod = $today->diffInDays($nextPeriodDate, false);
+        
+        // Calculate ovulation and fertile window
+        $ovulationDate = $lastPeriod->copy()->addDays($avgCycleLength - 14);
+        $fertileWindowStart = $ovulationDate->copy()->subDays(5);
+        $fertileWindowEnd = $ovulationDate->copy()->addDays(1);
+
+        // Calculate cycle progress (0-100%)
+        $cycleProgress = min(100, max(0, round(($daysSinceLastPeriod / $avgCycleLength) * 100)));
+
+        // Check if popup should be shown
+        $showPeriodPopup = false;
+        if ($today->greaterThanOrEqualTo($nextPeriodDate)) {
+            // Check if last_period_date is still before the expected next period date
+            if ($lastPeriod->lessThan($nextPeriodDate)) {
+                $showPeriodPopup = true;
+            }
+        }
+
+        // Get latest period from history
+        $latestPeriod = $this->periodHistoryService->getLatestPeriod($userId);
+        $periodLength = $latestPeriod && $latestPeriod->period_length 
+            ? $latestPeriod->period_length 
+            : $stats['avg_period_length'];
+
+        return [
+            'current_date' => $today->format('Y-m-d'),
+            'last_period_date' => $lastPeriodDate,
+            'current_day' => $currentDay,
+            'period_status' => $currentDay <= 7 ? 'Period' : 'Cycle',
+            'cycle_progress' => $cycleProgress,
+            'cycle_progress_text' => $cycleProgress < 5 ? 'Just getting started' : "",
+            'next_period_date' => $nextPeriodDate->format('Y-m-d'),
+            'next_period_display' => $nextPeriodDate->format('M d'),
+            'days_until_next_period' => max(0, $daysUntilNextPeriod),
+            'next_period_text' => $daysUntilNextPeriod > 0 
+                ? "in {$daysUntilNextPeriod} " . ($daysUntilNextPeriod == 1 ? 'day' : 'days')
+                : 'Overdue',
+            'ovulation_date' => $ovulationDate->format('Y-m-d'),
+            'fertile_window' => [
+                'start' => $fertileWindowStart->format('Y-m-d'),
+                'end' => $fertileWindowEnd->format('Y-m-d'),
+                'display' => $fertileWindowStart->format('M d') . ' - ' . $fertileWindowEnd->format('M d'),
+            ],
+            'peak_fertility' => $ovulationDate->format('M d'),
+            'period_report' => [
+                'last_started' => $latestPeriod ? Carbon::parse($latestPeriod->start_date)->format('M d') : Carbon::parse($lastPeriodDate)->format('M d'),
+                'period_length' => "{$periodLength} Days",
+                'cycle_length' => "{$avgCycleLength} Days",
+                'next_expected' => $nextPeriodDate->format('M d'),
+                'status' => $daysUntilNextPeriod >= -2 ? 'On Track' : 'Irregular',
+            ],
+            'ovulation_report' => [
+                'fertile_window' => $fertileWindowStart->format('M d') . ' - ' . $fertileWindowEnd->format('M d'),
+                'peak_fertility' => $ovulationDate->format('M d'),
+            ],
+            'avg_cycle_length' => $avgCycleLength,
+            'regularity' => $stats['regularity'],
+            'show_period_popup' => $showPeriodPopup,
+        ];
+    }
+
+    // Add confirmPeriodStarted method
+    public function confirmPeriodStarted(string $startDate, ?int $periodLength, ?int $userId = null): bool
+    {
+        if (!$userId) {
+            $user = $this->getAuthUser();
+            if (!$user) return false;
+            $userId = $user->id;
+        }
+
+        try {
+            $this->periodHistoryService->addPeriod($userId, $startDate, $periodLength);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

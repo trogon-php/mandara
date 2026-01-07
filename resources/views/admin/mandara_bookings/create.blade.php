@@ -44,6 +44,9 @@
                     method="POST"
                     action="{{ route('admin.mandara-bookings.store') }}">
                     @csrf
+                    @if(isset($prefillBooking))
+                        <input type="hidden" name="booking_id" value="{{ $prefillBooking->id }}">
+                    @endif
 
                     {{-- ================= STEP 1 : CLIENT ================= --}}
                     <h5>Client Details</h5>
@@ -52,21 +55,24 @@
                         <div class="col-md-3">
                             @include('admin.crud.fields.country-code', [
                                 'name' => 'country_code',
-                                'label' => 'Country Code'
+                                'label' => 'Country Code',
+                                'value' => old('country_code', $prefillBooking->user->country_code ?? '')
                             ])
                         </div>
 
                         <div class="col-md-6">
                             @include('admin.crud.fields.text', [
                                 'name' => 'phone',
-                                'label' => 'Phone'
+                                'label' => 'Phone',
+                                'value' => old('phone', $prefillBooking->user->phone ?? '')
                             ])
                         </div>
 
                         <div class="col-md-6">
                             @include('admin.crud.fields.text', [
                                 'name' => 'email',
-                                'label' => 'Email'
+                                'label' => 'Email',
+                                'value' => old('email', $prefillBooking->user->email ?? '')
                             ])
                         </div>
 
@@ -74,7 +80,8 @@
                             @include('admin.crud.fields.text', [
                                 'name' => 'name',
                                 'label' => 'Full Name',
-                                'required' => true
+                                'required' => true,
+                                'value' => old('phone', $prefillBooking->user->phone ?? '')
                             ])
                         </div>
                     </div>
@@ -337,4 +344,18 @@
         }
 
     </script>
+    @if(isset($prefillBooking))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    
+            $('#booking-section').removeClass('d-none');
+            $('#next-btn').addClass('d-none');
+    
+            fillBookingSection(@json($prefillBooking));
+        });
+        @if(isset($prefillBooking))
+        $('[name="phone"], [name="email"], [name="name"]').prop('readonly', true);
+        @endif
+    </script>
+    @endif
 @endsection

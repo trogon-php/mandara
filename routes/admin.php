@@ -33,6 +33,11 @@ use App\Http\Controllers\Admin\{
     ClientController,
     NurseController,
     DoctorController,
+    
+    AttendantController,
+    EstoreDeliveryStaffController,
+    FoodDeliveryStaffController,
+    FrontOfficeController,
     ReelCategoryController,
     ReelController,
     GalleryAlbumController,
@@ -57,6 +62,7 @@ use App\Http\Controllers\Admin\{
     MandaraPaymentController,
     MandaraBookingQuestionsController,
     AmenityController,
+    EstoreOrderController,
     //  Reports
     ReferralReportController,
     SlugController,
@@ -178,7 +184,29 @@ Route::middleware(['web','auth:admin'])
             Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
         });
         Route::resource('doctors', DoctorController::class);
-
+        // Kitchen Staff routes
+        
+        // Attendants routes
+        Route::prefix('attendants')->name('attendants.')->controller(AttendantController::class)->group(function () {
+            Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
+        });
+        Route::resource('attendants', AttendantController::class);
+        // Delivery Agent Estore routes
+        Route::prefix('estore-delivery-staff')->name('estore-delivery-staff.')->controller(EstoreDeliveryStaffController::class)->group(function () {
+            Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
+        });
+        Route::resource('estore-delivery-staff', EstoreDeliveryStaffController::class);
+        // Food Delivery Staff routes
+        Route::prefix('food-delivery-staff')->name('food-delivery-staff.')->controller(FoodDeliveryStaffController::class)->group(function () {
+            Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
+        });
+        Route::resource('food-delivery-staff', FoodDeliveryStaffController::class);
+        // Front Office routes
+        Route::prefix('front-office')->name('front-office.')->controller(FrontOfficeController::class)->group(function () {
+            Route::get('select2-ajax-options', 'getSelect2AjaxOptions')->name('select2-ajax-options');
+        });
+        Route::resource('front-office', FrontOfficeController::class);
+       
         // Cottage Packages routes
         Route::prefix('cottage-packages')->name('cottage-packages.')->controller(CottagePackageController::class)->group(function () {
             Route::get('sort', 'sortView')->name('sort.view');
@@ -300,10 +328,10 @@ Route::middleware(['web','auth:admin'])
             Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
             Route::post('/{estoreProduct}/clone', 'cloneItem')->name('clone');
         });
-
+        Route::post('estore-orders/{id}/assign', [EstoreOrderController::class, 'assignOrder'])->name('estore-orders.assign');
         Route::resource('estore-products', EstoreProductController::class);
-
         Route::resource('estore-categories', EstoreCategoryController::class);
+        Route::resource('estore-orders', EstoreOrderController::class);
 
         //Front Office Stay Bookings routes
         Route::prefix('mandara-bookings')->name('mandara-bookings.')->controller(MandaraBookingController::class)
@@ -321,6 +349,7 @@ Route::middleware(['web','auth:admin'])
             ->name('additional-details-store');
             Route::post('{booking}/approve', 'approve')->name('approve');
             Route::post('{booking}/reject', 'reject')->name('reject');
+            Route::get('{booking}/review','review')->name('review');
 
         });
         Route::resource('mandara-bookings', MandaraBookingController::class);

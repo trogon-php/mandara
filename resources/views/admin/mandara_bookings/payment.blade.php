@@ -36,45 +36,54 @@
 
             <div class="card-body">
 
-                @php
-                    $isPaid = !empty($paymentOrder);
-                @endphp
-
                 {{-- PAYMENT SUMMARY --}}
                 <div class="mb-4">
                     <h6>Payment Summary</h6>
-
+                
                     <p>
-                        Package Amount:
+                        Total Package Amount:
+                        <strong>₹ {{ number_format($packageAmount, 2) }}</strong>
+                    </p>
+                
+                    <p>
+                        Booking (Advance) Amount:
                         <strong>₹ {{ number_format($bookingAmount, 2) }}</strong>
                     </p>
-
-                    @if($taxPercent > 0)
-                        <p>
-                            GST ({{ $taxPercent }}%):
-                            <strong>₹ {{ number_format($taxAmount, 2) }}</strong>
-                        </p>
-                    @endif
-
-                    <hr>
-
+                
                     <p>
-                        Total Payable:
-                        <strong>₹ {{ number_format($totalAmount, 2) }}</strong>
+                        Paid Amount:
+                        <strong class="text-success">
+                            ₹ {{ number_format($paidAmount, 2) }}
+                        </strong>
                     </p>
+                
+                    <p>
+                        Pending Amount:
+                        <strong class="text-danger">
+                            ₹ {{ number_format($pendingAmount, 2) }}
+                        </strong>
+                    </p>
+                    <div class="d-flex gap-2">
+                    @if($isFullyPaid)
+                        <span class="badge bg-success">Fully Paid</span>
+                    @elseif($paidAmount > 0)
+                        <span class="badge bg-warning text-dark">Partially Paid</span>
+                    @else
+                        <span class="badge bg-secondary">Not Paid</span>
+                    @endif
+                    </div>
                 </div>
 
                
                 {{-- CASE 1: PAYMENT DONE --}}
                
-                @if($isPaid)
+                @if($isFullyPaid)
 
-                    <div class="alert alert-success">
-                        Payment already completed on
-                        {{ $paymentOrder->created_at->format('d M Y, h:i A') }}
-                    </div>
+                <div class="alert alert-success">
+                    Payment fully completed
+                </div>
 
-                    @include('admin.crud.form', [
+                    {{-- @include('admin.crud.form', [
                         'action' => '#',
                         'disableSubmit' => true,
                         'fields' => [
@@ -100,28 +109,39 @@
                                 'col' => 6
                             ],
                         ]
-                    ])
+                    ])--}}
 
                     <a href="{{ route('admin.mandara-bookings.additional-details', $booking->id) }}"
                        class="btn btn-primary mt-3">
                         Next
                     </a>
 
-                @endif
+                @endif 
 
                 
                 {{-- CASE 2: PAYMENT PENDING --}}
               
-                @if(!$isPaid)
+                @if(!$isFullyPaid)
 
                     @include('admin.crud.form', [
                         'action' => route('admin.mandara-bookings.payment-store', $booking->id),
                         'submitText' => 'Confirm Payment',
                         'fields' => [
+                            // [
+                            //     'type' => 'hidden',
+                            //     'name' => 'payable_amount',
+                            //     'value' => $totalAmount
+                            // ],
                             [
-                                'type' => 'hidden',
-                                'name' => 'payable_amount',
-                                'value' => $totalAmount
+                                'type' => 'number',
+                                'name' => 'paid_amount',
+                                'label' => 'Amount to Pay',
+                                'required' => true,
+                                'attributes' => [
+                                    'step' => '0.01',
+                                    'max'  => $pendingAmount
+                                ],
+                                'col' => 6
                             ],
                             [
                                 'type' => 'select',
@@ -131,7 +151,7 @@
                                 'placeholder' => 'Select payment method',
                                 'options' => [
                                     'cash'   => 'Cash',
-                                    'online' => 'Online',
+                                    // 'online' => 'Online',
                                     'bank'   => 'Bank',
                                 ],
                                 'required' => true,

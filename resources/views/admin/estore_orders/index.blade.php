@@ -26,3 +26,4 @@
     ',
     'tableBody'     => view('admin.estore_orders.index-table', compact('list_items'))
 ])
+@include('admin.estore_orders.assign-modal')

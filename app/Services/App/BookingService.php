@@ -209,7 +209,7 @@ class BookingService extends AppBaseService
     public function completeOrder(array $data): array
     {
         $result = $this->razorpayService->verifyPayment($data);
-
+        Log::info('Payment verification result: ' . json_encode($result));
         if($result === false) {
             return [
                 'status' => false,
@@ -229,6 +229,7 @@ class BookingService extends AppBaseService
         }
         // update order
         $updateData = [
+            'paid_amount' => $data['paid_amount'],
             'payment_status' => 'paid',
             'payment_id' => $data['razorpay_payment_id'],
         ];

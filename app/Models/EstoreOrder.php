@@ -56,4 +56,15 @@ class EstoreOrder extends BaseModel
     {
         return $query->where('order_status', 'cancelled');
     }
+    public function assignments()
+    {
+        return $this->hasMany(EstoreOrderAssignment::class, 'order_id');
+    }
+
+    public function currentAssignment()
+    {
+        return $this->hasOne(EstoreOrderAssignment::class, 'order_id')
+            ->whereIn('status', ['assigned', 'accepted', 'out_for_delivery'])
+            ->latest();
+    }
 }

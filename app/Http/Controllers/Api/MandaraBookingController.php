@@ -68,6 +68,7 @@ class MandaraBookingController extends BaseApiController
             'razorpay_order_id' => 'required|string',
             'razorpay_payment_id' => 'required|string',
             'razorpay_signature' => 'required|string',
+            'paid_amount' => 'nullable|numeric',
         ]);
 
         $result = $this->bookingService->completeOrder($data);

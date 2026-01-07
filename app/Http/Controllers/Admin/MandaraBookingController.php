@@ -29,8 +29,9 @@ class MandaraBookingController extends AdminBaseController
         $filters = array_filter($request->only(['approval_status']));
         $searchParams = ['search' => $request->get('search')];
 
-        $list_items = $this->service->getFilteredData(['search' => $searchParams['search'], 'filters' => $filters]);
-       
+        //$list_items = $this->service->getFilteredData(['search' => $searchParams['search'], 'filters' => $filters]);
+        $list_items = $this->service->attachBookingSourceFlag($this->service->getFilteredData(['search' => $searchParams['search'], 'filters' => $filters]));
+      
 
         return view('admin.mandara_bookings.index', [
             'page_title' => 'Stay Bookings List',
@@ -42,7 +43,7 @@ class MandaraBookingController extends AdminBaseController
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $packages = CottagePackage::select('id', 'duration_days')->get();
 
@@ -50,17 +51,25 @@ class MandaraBookingController extends AdminBaseController
     
         $cottagePackages = ['' => 'Select Cottage Package']
             + $this->cottagePackageService->getOptions();
+        $prefillBooking = null;
+
+        if ($request->booking_id) {
+            $prefillBooking = MandaraBooking::with('user')
+                ->findOrFail($request->booking_id);
+        }
     
         return view('admin.mandara_bookings.create', [
             'page_title'        => 'Reserve Stay Booking',
             'cottagePackages'   => $cottagePackages,
             'packageDurations' => $packageDurations, 
+            'prefillBooking'   => $prefillBooking,
         ]);
     }
 
     public function store(StoreRequest $request)
     {
         $data = $request->validated();
+        
 
          //  Find or create client
          $user = $this->findOrCreateClient($data);
@@ -174,96 +183,44 @@ class MandaraBookingController extends AdminBaseController
         return redirect()->route('admin.mandara-bookings.create');
     }
 
+    public function paymentView(MandaraBooking $booking) {
 
-    public function paymentView(MandaraBooking $booking)
-    {
-    
-         // Existing payment (if any)
-    $paymentOrder = MandaraBookingOrder::where('booking_id', $booking->id)
-    ->latest()
-    ->first();
-    
-
-        // Get package
-        $package = CottagePackage::find($booking->cottage_package_id);
-
-        // Booking amount
-        $bookingAmount = $package?->booking_amount ?? 0;
-
-        // Tax logic
-        $taxPercent = ($package && $package->tax_included == 1) ? 18 : 0;
-        $taxAmount  = ($bookingAmount * $taxPercent) / 100;
-
-        // Total
-        $totalAmount = $bookingAmount + $taxAmount;
-
-        return view('admin.mandara_bookings.payment', [
-            'page_title'    => 'Payment Details',
-            'booking'       => $booking,
-            'paymentOrder'  => $paymentOrder,
-            'bookingAmount' => $bookingAmount, 
-            'taxPercent'    => $taxPercent,     
-            'taxAmount'     => $taxAmount,      
-            'totalAmount'   => $totalAmount,    
-        ]);
+        return view(
+            'admin.mandara_bookings.payment',
+            array_merge(
+                ['page_title' => 'Payment Details'],
+                $this->service->getPaymentViewData($booking)
+            )
+        );
     }
 
-    public function storePayment(Request $request, MandaraBooking $booking)
+
+    public function storePayment(Request $request,MandaraBooking $booking) 
     {
-        //  Prevent double payment
-        if ($booking->booking_payment_status === 'paid') {
+        $paidAmount = \App\Models\MandaraBookingOrder::where('booking_id', $booking->id)
+        ->where('payment_status', 'paid')
+        ->sum('paid_amount');
+
+        if ($paidAmount >= $booking->total_amount) {
             return redirect()
                 ->route('admin.mandara-bookings.additional-details', $booking->id)
                 ->with('info', 'Payment already completed');
         }
-
-        //  Validate
+    
+        // Validate
         $request->validate([
             'payment_method' => 'required|in:cash,online,bank',
             'payment_id'     => 'required_if:payment_method,bank',
+            'paid_amount'    => 'required|numeric|min:1',
         ]);
-
-        //  RE-CALCULATE AMOUNTS (SOURCE OF TRUTH)
-        $package = CottagePackage::find($booking->cottage_package_id);
-
-        $bookingAmount = $package?->booking_amount ?? 0;
-        $price = $package?->price ?? 0;
-
-        $taxPercent = ($package && $package->tax_included == 1) ? 18 : 0;
-        $taxAmount  = ($bookingAmount * $taxPercent) / 100;
-
-        $totalAmount = $bookingAmount + $taxAmount;
-
-        //  INSERT PAYMENT ORDER (ALL REQUIRED FIELDS)
-        MandaraBookingOrder::create([
-            'booking_id'     => $booking->id,
-            'booking_amount' => $bookingAmount,
-            'total_amount'   => $price,
-            'payable_amount' => $totalAmount,
-            'payment_method' => $request->payment_method,
-            'payment_id'     => $request->payment_method === 'bank'
-                                ? $request->payment_id
-                                : null,
-            'payment_status' => 'paid',
-            'created_by'     => auth()->id(),
-            'updated_by'     => auth()->id(),
-        ]);
-
-        //  UPDATE MAIN BOOKING
-        $booking->update([
-            'booking_payment_status' => 'paid',
-            'booking_amount'         => $bookingAmount,
-            'total_amount'           => $price,
-            'payable_amount'         => $totalAmount,
-            'payment_method'         => $request->payment_method,
-        ]);
-
-        //  NEXT STEP
+    
+        // Delegate to service
+        $this->service->storePayment($booking, $request->all());
+    
         return redirect()
             ->route('admin.mandara-bookings.additional-details', $booking->id)
             ->with('success', 'Payment recorded successfully');
     }
-
 
 
     public function additionalDetails(MandaraBooking $booking)
@@ -366,5 +323,17 @@ class MandaraBookingController extends AdminBaseController
     {
         return $this->clientService->findOrCreate($data);
     }
+    public function review(MandaraBooking $booking)
+    {
+        // Only app-created + pending
+        if (!$booking->is_app_booking || $booking->approval_status !== 'pending') {
+            return redirect()
+                ->route('admin.mandara-bookings.index')
+                ->with('error', 'Invalid booking review request.');
+        }
+
+        return redirect()->route('admin.mandara-bookings.create',['booking_id' => $booking->id]);
+    }
+
 
 }

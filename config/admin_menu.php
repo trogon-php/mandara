@@ -24,6 +24,11 @@ return [
             ['title' => 'Guests', 'route' => 'admin/guests', 'can' => 'guests/index'],
             ['title' => 'Doctors', 'route' => 'admin/doctors', 'can' => 'doctors/index'],
             ['title' => 'Nurses', 'route' => 'admin/nurses', 'can' => 'nurses/index'],
+            ['title' => 'Kitchen Staff', 'route' => 'admin/kitchen-staff', 'can' => 'kitchen-staff/index'],
+            ['title' => 'Attendants', 'route' => 'admin/attendants', 'can' => 'attendants/index'],
+            ['title' => 'Estore Delivery Staff', 'route' => 'admin/estore-delivery-staff', 'can' => 'estore-delivery-staff/index'],
+            ['title' => 'Food Delivery Staff', 'route' => 'admin/food-delivery-staff', 'can' => 'food-delivery-staff/index'],
+            ['title' => 'Front Office', 'route' => 'admin/front-office', 'can' => 'front-office/index'],
         ],
     ],
    

@@ -28,15 +28,15 @@ class FoodMenuController extends BaseApiController
                     [
                         'value' => 0,
                         'label' => 'Non-Vegetarian',
-                        'selected' => true,
+                        'selected' => $isVeg == 0 ? true : false,
                     ],
                     [
                         'value' => 1,
                         'label' => 'Vegetarian',
-                        'selected' => false,
+                        'selected' => $isVeg == 1 ? true : false,
                     ]
                 ],
-                'deliver_breakfast_to_room' => 1,
+                'deliver_breakfast_to_room' => (int) $user->getMetaField('deliver_breakfast_to_room'),
             ],
             'today_meals' => $foodMenu,
         ];

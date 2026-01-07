@@ -45,13 +45,30 @@ class UserJourneyController extends BaseApiController
         $journeyStatus = $this->clientService->getJourneyStatus($user->id);
 
         if($journeyStatus == 'preparing') {
-            $fertilityOverview = $this->userJourneyService->getFertilityOverview($user->getMetaField('last_period_date'));
-            return $this->respondSuccess($fertilityOverview, 'Fertility overview fetched successfully');
+            // $fertilityOverview = $this->userJourneyService->getFertilityOverview($user->getMetaField('last_period_date'));
+            $cycleOverview = $this->userJourneyService->getCycleOverview($user->id);
+            return $this->respondSuccess($cycleOverview, 'Cycle overview fetched successfully');
         }
         return $this->respondSuccess([], 'Fertility overview not found');
     }
 
-    public function getNextPeriodDate(Request $request)
+    public function confirmPeriod(Request $request)
+    {
+        $user = $this->getAuthUser();
+
+        $request->validate([
+            'period_start_date' => 'required|date',
+            'period_length' => 'nullable|integer|min:1|max:10',
+        ]);
+
+        $periodStartDate = $request->input('period_start_date');
+        $periodLength = $request->input('period_length');
+        $this->userJourneyService->confirmPeriodStarted($periodStartDate, $periodLength, $user->id);
+
+        return $this->respondSuccess([], 'Period confirmed successfully');
+    }
+
+    public function getOvulationDate(Request $request)
     {
         $request->validate([
             'last_period_date' => 'required|date',
@@ -61,10 +78,10 @@ class UserJourneyController extends BaseApiController
         $lastPeriodDate = $request->input('last_period_date');
         $cycleLength = $request->input('cycle_length');
 
-        $nextPeriodDate = $this->userJourneyService->calculateNextPeriodDate($lastPeriodDate, $cycleLength);
+        $ovulationDate = $this->userJourneyService->calculateOvulationDate($lastPeriodDate, $cycleLength);
         $data = [
-            'next_period_date' => "Your next period date is on " . Carbon::parse($nextPeriodDate)->format('M d Y'),
+            'next_period_date' => "Your ovulation date is on " . Carbon::parse($ovulationDate)->format('M d Y'),
         ];
-        return $this->respondSuccess($data, 'Next period date fetched successfully');
+        return $this->respondSuccess($data, 'Ovulation date fetched successfully');
     }
 }

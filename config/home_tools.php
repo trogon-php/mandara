@@ -59,4 +59,11 @@ return [
         'type' => 'app',
         'url' => '',
     ],
+    [
+        'title' => 'Nutrition Calculator',
+        'image' => 'nutrition.png',
+        'key' => 'nutrition_calculator',
+        'type' => 'app',
+        'url' => '',
+    ],
 ];

@@ -86,10 +86,10 @@ return [
         'delete' => [Role::ADMIN],
     ],
     'estore-products' => [
-        'index' => [Role::ADMIN, Role::NURSE],
-        'create' => [Role::ADMIN, Role::NURSE],
-        'edit' => [Role::ADMIN, Role::NURSE],
-        'delete' => [Role::ADMIN, Role::NURSE],
+        'index' => [Role::ADMIN],
+        'create' => [Role::ADMIN],
+        'edit' => [Role::ADMIN],
+        'delete' => [Role::ADMIN],
     ],
     'estore-categories' => [
         'index' => [Role::ADMIN],

@@ -10,17 +10,19 @@ enum Role: int
     case NURSE                     =   4;
     case ATTENDANT                 =   5;
     case ESTORE_DELIVERY_STAFF     =   6;
+    case FOOD_DELIVERY_STAFF       =   7;
     case FRONT_OFFICE              =   14;
 
     public function label(): string
     {
         return match ($this) {
-            self::ADMIN   => 'Admin',
+            self::ADMIN   => 'Super Admin',
             self::CLIENT => 'Client',
             self::DOCTOR   => 'Doctor',
             self::NURSE   => 'Nurse',
             self::ATTENDANT   => 'Attendant',
             self::ESTORE_DELIVERY_STAFF   => 'Estore Delivery Staff',
+            self::FOOD_DELIVERY_STAFF   => 'Food Delivery Staff',
             self::FRONT_OFFICE   => 'Front Office',
         };
     }

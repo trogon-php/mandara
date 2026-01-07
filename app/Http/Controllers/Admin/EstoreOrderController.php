@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\AdminBaseController;
+use App\Services\Estore\EstoreOrderAssignmentService;
 use App\Services\Estore\EstoreOrderService;
 use Illuminate\Http\Request;
 
 class EstoreOrderController extends AdminBaseController
 {
-    public function __construct(private EstoreOrderService $service) {}
+    public function __construct(
+        private EstoreOrderService $service,
+        private EstoreOrderAssignmentService $assignmentService
+        ) {}
 
     public function index(Request $request)
     {
@@ -19,6 +23,9 @@ class EstoreOrderController extends AdminBaseController
             'search' => $searchParams['search'],
             'filters' => $filters
         ]);
+
+        // Load assignments for orders
+        $list_items->load(['currentAssignment.deliveryStaff']);
 
         return view('admin.estore_orders.index', [
             'page_title' => 'Estore Orders',
@@ -42,5 +49,30 @@ class EstoreOrderController extends AdminBaseController
             'page_title' => 'Order Details',
             'order' => $order,
         ]);
+    }
+    /**
+     * Assign order to delivery staff
+     */
+    public function assignOrder(Request $request, string $id)
+    {
+       
+        $data = $request->validate([
+            'delivery_staff_id' => 'required|exists:users,id',
+            'delivery_room' => 'nullable|string|max:50',
+        ]);
+
+        $managerId = $this->userId();
+        $result = $this->assignmentService->assignOrder(
+            (int)$id,
+            $data['delivery_staff_id'],
+            $managerId,
+            $data['delivery_room'] ?? null
+        );
+
+        if (!$result['status']) {
+            return $this->errorResponse($result['message'], $result['http_code']);
+        }
+
+        return $this->successResponse('Order assigned successfully', $result['data']);
     }
 }

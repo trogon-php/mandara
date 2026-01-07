@@ -54,7 +54,7 @@ class IsUserActive
         // });
 
         // If blocked, return error
-        if (($cachedUser->status ?? 1) == 0 || ($cachedUser->is_blocked ?? false)) {
+        if (($cachedUser->status ?? 'blocked') == 'blocked' || ($cachedUser->is_blocked ?? false)) {
             return response()->json([
                 'status'       => false,
                 'http_code'  => 403,

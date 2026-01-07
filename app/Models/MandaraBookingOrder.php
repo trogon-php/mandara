@@ -10,9 +10,11 @@ class MandaraBookingOrder extends BaseModel
         'payment_method',
         'payment_order_id',
         'payment_id',
+        'type',
         'total_amount',
         'discount_amount',
         'payable_amount',
+        'paid_amount',
         'notes',
         'remarks',
     ];
