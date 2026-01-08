@@ -10,7 +10,7 @@ class DeliveryOrderResource extends BaseResource
     public function __construct($resource)
     {
         parent::__construct($resource);
-        $this->includeId = true;
+        $this->includeId = false;
     }
 
     protected function resourceFields(Request $request): array
@@ -22,24 +22,24 @@ class DeliveryOrderResource extends BaseResource
             // Assignment details
             'assignment_id' => $this->id,
             'status' => $this->status,
-            'assigned_at' => $this->assigned_at?->format('Y-m-d H:i:s'),
+            // 'assigned_at' => $this->assigned_at?->format('Y-m-d H:i:s'),
             // 'started_at' => $this->started_at?->format('Y-m-d H:i:s'),
-            'delivered_at' => $this->delivered_at?->format('h:i A'),
+            'delivered_at' => "Delivered at ". $this->delivered_at?->format('h:i A'),
             'delivery_room' => $this->delivery_room,
             'delivery_remarks' => $this->delivery_remarks,
             
             // Order details
             'order' => $this->when($order, function () use ($order) {
                 return [
-                    // 'id' => $order->id,
+                    'id' => $order->id,
                     // 'order_number' => $order->order_number,
                     // 'order_status' => $order->order_status,
-                    // 'payment_status' => $order->payment_status,
-                    // 'payment_method' => $order->payment_method,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
                     // 'total_amount' => number_format($order->total_amount, 2, '.', ''),
                     // 'discount_amount' => number_format($order->discount_amount, 2, '.', ''),
-                    // 'payable_amount' => number_format($order->payable_amount, 2, '.', ''),
-                    'ordered_at' => $order->created_at->format('h:i A'),
+                    'payable_amount' => number_format($order->payable_amount, 2, '.', ''),
+                    'ordered_at' => "Ordered at ". $order->created_at->format('h:i A'),
                     // 'created_at_formatted' => $order->created_at->format('M d, Y h:i A'),
                 ];
             }),

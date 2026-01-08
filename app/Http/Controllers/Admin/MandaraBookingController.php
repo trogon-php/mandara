@@ -249,11 +249,11 @@ class MandaraBookingController extends AdminBaseController
 
     
     
-    public function approve(MandaraBooking $booking,MandaraBookingService $service) 
+    public function approve(MandaraBooking $booking) 
     {
         try {
           
-            $service->approveBooking($booking);
+            $this->service->approveBooking($booking);
     
             return back()->with('success', 'Booking approved and package activated successfully.');
         } catch (\Exception $e) {

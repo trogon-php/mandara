@@ -73,6 +73,9 @@ class EstoreOrderController extends AdminBaseController
             return $this->errorResponse($result['message'], $result['http_code']);
         }
 
-        return $this->successResponse('Order assigned successfully', $result['data']);
+        return $this->successResponse(
+            $result['message'], 
+            $result['data']
+        );
     }
 }

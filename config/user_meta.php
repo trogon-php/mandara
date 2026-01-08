@@ -101,4 +101,9 @@ return [
         'required' => false,
         'enabled'  => true,
     ],
+    'room_number' => [
+        'type'     => 'text',
+        'required' => false,
+        'enabled'  => true,
+    ],
 ];

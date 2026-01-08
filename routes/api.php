@@ -187,9 +187,9 @@ Route::prefix('v1')->group(function () {
                     Route::get('/dashboard', 'dashboard');
                     Route::prefix('orders')->group(function () {
                         Route::get('/', 'index');
-                        Route::get('/{id}', 'show');
-                        Route::post('/{id}/start', 'startDelivery');
-                        Route::put('/{id}/status', 'updateStatus');
+                        // Route::get('/{id}', 'show');
+                        // Route::post('/{id}/start', 'startDelivery');
+                        // Route::put('/{id}/status', 'updateStatus');
                         Route::post('/{id}/deliver', 'markDelivered');
                     });
                 });

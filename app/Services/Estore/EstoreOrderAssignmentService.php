@@ -276,16 +276,25 @@ class EstoreOrderAssignmentService extends BaseService
 
         // If delivered, update the order status as well
         if ($status === 'delivered') {
-            $assignment->order->update([
-                'order_status' => 'delivered',
-                'delivered_at' => now(),
-            ]);
+            if($assignment->order->payment_method == 'cod') {
+                $assignment->order->update([
+                    'payment_status' => 'paid',
+                    'order_status' => 'delivered',
+                    'delivered_at' => now(),
+                ]);
+            } else {
+
+                $assignment->order->update([
+                    'order_status' => 'delivered',
+                    'delivered_at' => now(),
+                ]);
+            }
         }
 
         return [
             'status' => true,
             'message' => 'Status updated successfully',
-            'data' => $assignment->load(['order.user', 'order.items.product']),
+            'data' => [],
             'http_code' => Response::HTTP_OK
         ];
     }

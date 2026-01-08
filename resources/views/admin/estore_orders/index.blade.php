@@ -24,6 +24,6 @@
             <th>Action</th>
         </tr>
     ',
-    'tableBody'     => view('admin.estore_orders.index-table', compact('list_items'))
+    'tableBody' => view('admin.estore_orders.index-table', compact('list_items'))
 ])
 @include('admin.estore_orders.assign-modal')

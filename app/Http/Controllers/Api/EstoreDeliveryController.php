@@ -73,43 +73,43 @@ class EstoreDeliveryController extends BaseApiController
     /**
      * Start delivery
      */
-    public function startDelivery(Request $request, string $id)
-    {
-        $user = $this->getUserOrFail();
+    // public function startDelivery(Request $request, string $id)
+    // {
+    //     $user = $this->getUserOrFail();
         
-        if (is_object($user) && property_exists($user, 'status') && $user->status === 'blocked') {
-            return $this->respondForbidden('Your account is blocked');
-        }
+    //     if (is_object($user) && property_exists($user, 'status') && $user->status === 'blocked') {
+    //         return $this->respondForbidden('Your account is blocked');
+    //     }
 
-        $result = $this->deliveryService->startDelivery((int)$id, $user->id);
-        return $this->serviceResponse($result);
-    }
+    //     $result = $this->deliveryService->startDelivery((int)$id, $user->id);
+    //     return $this->serviceResponse($result);
+    // }
 
-    /**
-     * Update order status
-     */
-    public function updateStatus(Request $request, string $id)
-    {
-        $user = $this->getUserOrFail();
+    // /**
+    //  * Update order status
+    //  */
+    // public function updateStatus(Request $request, string $id)
+    // {
+    //     $user = $this->getUserOrFail();
         
-        if (is_object($user) && property_exists($user, 'status') && $user->status === 'blocked') {
-            return $this->respondForbidden('Your account is blocked');
-        }
+    //     if (is_object($user) && property_exists($user, 'status') && $user->status === 'blocked') {
+    //         return $this->respondForbidden('Your account is blocked');
+    //     }
 
-        $data = $request->validate([
-            'status' => 'required|in:assigned,accepted,out_for_delivery,delivered,failed',
-            'remarks' => 'nullable|string|max:1000',
-        ]);
+    //     $data = $request->validate([
+    //         'status' => 'required|in:assigned,accepted,out_for_delivery,delivered,failed',
+    //         'remarks' => 'nullable|string|max:1000',
+    //     ]);
 
-        $result = $this->deliveryService->updateOrderStatus(
-            (int)$id,
-            $user->id,
-            $data['status'],
-            $data['remarks'] ?? null
-        );
+    //     $result = $this->deliveryService->updateOrderStatus(
+    //         (int)$id,
+    //         $user->id,
+    //         $data['status'],
+    //         $data['remarks'] ?? null
+    //     );
 
-        return $this->serviceResponse($result);
-    }
+    //     return $this->serviceResponse($result);
+    // }
 
     /**
      * Mark order as delivered

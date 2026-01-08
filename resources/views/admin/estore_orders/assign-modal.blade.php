@@ -147,7 +147,8 @@ document.getElementById('assignOrderForm').addEventListener('submit', function(e
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status) {
+        console.log(data.status);
+        if (data.status == 'success') {
             // Show success message
             Swal.fire({
                 icon: 'success',
@@ -157,8 +158,12 @@ document.getElementById('assignOrderForm').addEventListener('submit', function(e
                 showConfirmButton: false
             });
             
-            // Close modal
-            assignOrderModal.hide();
+            // Close modal - get modal instance properly
+            const modalElement = document.getElementById('assignOrderModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
             
             // Reload table or page
             setTimeout(() => {
